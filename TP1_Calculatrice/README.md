@@ -10,7 +10,8 @@ Projet **Windows Forms (VB.NET, .NET 8)** nommé `Calculatrice`.
 
 ## Ouvrir / exécuter
 
-- **Visual Studio 2022** : ouvrir `Calculatrice.vbproj`, puis `F5`.
+- **Visual Studio 2022** : double-cliquer sur `Calculatrice.sln` (ou Fichier → Ouvrir → Projet/Solution → `Calculatrice.sln`), puis `F5`.
+  Ne pas utiliser « Ouvrir un dossier » : F5 ne trouverait pas le programme à lancer.
 - **Ligne de commande** (Windows, SDK .NET 8) :
   ```
   dotnet run --project Calculatrice.vbproj
