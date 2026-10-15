@@ -1,0 +1,849 @@
+<title>Guide TP1 Calculatrice</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (~70ch) with a sticky section index on wide screens; live WinForms mock-ups drawn at the real designer coordinates. */
+:root {
+  --paper: #f6f7f9;
+  --sheet: #ffffff;
+  --ink: #1b2430;
+  --muted: #5a6577;
+  --rule: #d9dee6;
+  --accent: #b4540a;      /* orange "&" mnemonic */
+  --accent-soft: #fbeee2;
+  --code-bg: #f0f2f6;
+  --kw: #1d4fb8;
+  --str: #9a3412;
+  --com: #2f7d4f;
+  --num: #7c3aed;
+  --win-title: #2b5797;
+  --win-title-fg: #ffffff;
+  --win-body: #ece9e1;
+  --ctl: #fdfdfd;
+  --ctl-border: #8b93a1;
+  --ctl-fg: #1b2430;
+  --red: #c4231b;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12161c; --sheet: #191e26; --ink: #e4e8ee; --muted: #9aa5b5; --rule: #2c3440;
+    --accent: #f0954a; --accent-soft: #3a2616; --code-bg: #0f1318;
+    --kw: #7aa7ff; --str: #f2a37a; --com: #79c79a; --num: #c4a5ff;
+    --win-title: #23467a; --win-title-fg: #f2f5fa; --win-body: #2a2e36; --ctl: #383d47; --ctl-border: #5d6574; --ctl-fg: #e4e8ee; --red: #ff6b61;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12161c; --sheet: #191e26; --ink: #e4e8ee; --muted: #9aa5b5; --rule: #2c3440;
+  --accent: #f0954a; --accent-soft: #3a2616; --code-bg: #0f1318;
+  --kw: #7aa7ff; --str: #f2a37a; --com: #79c79a; --num: #c4a5ff;
+  --win-title: #23467a; --win-title-fg: #f2f5fa; --win-body: #2a2e36; --ctl: #383d47; --ctl-border: #5d6574; --ctl-fg: #e4e8ee; --red: #ff6b61;
+  color-scheme: dark;
+}
+
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px;
+}
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; } nav.toc { position: static !important; } }
+
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 14px; }
+nav.toc p { font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--ink); text-decoration: none; border-left: 2px solid transparent; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); border-left-color: var(--accent); outline: none; }
+nav.toc .file { font-family: var(--mono); font-size: 12.5px; }
+
+main { min-width: 0; }
+header.hero { padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
+.eyebrow { font: 600 12px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+h1 { font: 800 clamp(34px, 6vw, 54px)/1.02 var(--display); font-stretch: 80%; margin: 0 0 14px; text-wrap: balance; letter-spacing: -.01em; }
+h1 u, h2 u, h3 u { text-decoration-color: var(--accent); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+.lede { font-size: 18px; color: var(--muted); max-width: 62ch; margin: 0; }
+section { padding-top: 40px; }
+h2 { font: 750 30px/1.15 var(--display); font-stretch: 85%; margin: 0 0 6px; text-wrap: balance; }
+h2 .file { font: 500 15px/1 var(--mono); color: var(--muted); display: block; margin-top: 8px; font-stretch: normal; }
+h3 { font: 700 20px/1.25 var(--display); font-stretch: 90%; margin: 28px 0 8px; }
+p, li { max-width: 68ch; }
+p { margin: 0 0 14px; }
+code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--accent); }
+
+.code { position: relative; margin: 14px 0 18px; border: 1px solid var(--rule); border-radius: 8px; background: var(--code-bg); overflow: hidden; }
+.code .cap { display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 500 12px/1 var(--mono); color: var(--muted); padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+.code pre { margin: 0; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.55 var(--mono); tab-size: 4; }
+.code pre code { background: none; padding: 0; font-size: inherit; }
+.k { color: var(--kw); font-weight: 500; } .s { color: var(--str); } .c { color: var(--com); font-style: italic; } .n { color: var(--num); }
+.copy { font: 500 12px/1 var(--body); color: var(--muted); background: var(--sheet); border: 1px solid var(--rule); border-radius: 5px; padding: 5px 9px; cursor: pointer; }
+.copy:hover, .copy:focus-visible { color: var(--ink); border-color: var(--accent); outline: none; }
+
+.explain { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 8px; }
+.explain li { display: grid; grid-template-columns: minmax(110px, max-content) minmax(0, 1fr); gap: 4px 14px; padding: 10px 0; border-top: 1px dashed var(--rule); max-width: none; }
+.explain li > b { font: 500 13.5px/1.5 var(--mono); color: var(--accent); }
+@media (max-width: 560px) { .explain li { grid-template-columns: minmax(0, 1fr); } }
+
+.tbl { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--sheet); }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 11.5px/1.2 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--code-bg); }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0 20px; max-width: 68ch; }
+.note p:last-child { margin: 0; }
+
+/* Flow diagram */
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 20px 0 8px; }
+.flow .box { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+.flow .box b { display: block; font: 500 14px/1.3 var(--mono); }
+.flow .arrow { color: var(--muted); font: 500 13px/1 var(--mono); }
+
+/* WinForms mock-ups drawn with designer coordinates */
+.mock-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; margin: 18px 0 22px; }
+.mock-side { flex: 1 1 260px; min-width: 0; }
+.win { flex: 0 0 auto; max-width: 100%; border: 1px solid var(--ctl-border); border-radius: 7px 7px 3px 3px; box-shadow: 0 6px 22px rgba(15, 25, 40, .14); overflow: hidden; font: 12px/1.2 "Segoe UI", var(--body); }
+.win .bar { background: var(--win-title); color: var(--win-title-fg); padding: 6px 8px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 12.5px; }
+.win .bar .x { width: 18px; height: 16px; border-radius: 3px; background: #d9443b; color: #fff; display: grid; place-items: center; font-size: 10px; }
+.win .client { position: relative; background: var(--win-body); }
+.ctl { position: absolute; box-sizing: border-box; color: var(--ctl-fg); }
+.ctl.btn { background: var(--ctl); border: 1px solid var(--ctl-border); border-radius: 3px; display: grid; place-items: center; text-align: center; font-size: 11.5px; cursor: default; padding: 0 2px; }
+.ctl.btn.red { color: var(--red); }
+.ctl.txt { background: var(--ctl); border: 1px solid var(--ctl-border); text-align: right; padding: 3px 5px; font-size: 12px; }
+.ctl.txt.ro { background: var(--win-body); }
+.ctl.lbl { font-size: 12px; }
+.ctl.grp { border: 1px solid var(--ctl-border); border-radius: 4px; }
+.ctl.grp > span { position: absolute; top: -8px; left: 8px; background: var(--win-body); padding: 0 4px; color: var(--win-title); font-size: 11.5px; }
+.ctl.radio { display: flex; align-items: center; gap: 4px; font-size: 13px; }
+.ctl.radio::before { content: ""; width: 11px; height: 11px; border: 1px solid var(--ctl-border); border-radius: 50%; background: var(--ctl); box-sizing: border-box; }
+.ctl.radio.on::before { background: radial-gradient(circle, var(--win-title) 0 3px, var(--ctl) 3.5px); }
+.ctl u { text-decoration-thickness: 1px; }
+.ctl .nm { display: none; font: 500 9.5px/1.1 var(--mono); color: var(--accent); }
+.names .ctl .lab { display: none; }
+.names .ctl .nm { display: block; }
+.names .ctl.radio .nm { display: inline; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); cursor: pointer; user-select: none; margin-top: 6px; }
+.toggle input { accent-color: var(--accent); width: 16px; height: 16px; }
+.icon-err { width: 22px; height: 22px; border-radius: 50%; background: #d9443b; color: #fff; display: grid; place-items: center; font: 700 13px/1 var(--body); margin: 0 auto 2px; }
+
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 12px 0 20px; display: grid; gap: 10px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; }
+.steps li::before { content: counter(s); font: 700 13px/28px var(--display); width: 28px; height: 28px; text-align: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <p>Sommaire</p>
+  <ol>
+    <li><a href="#apercu">Vue d'ensemble</a></li>
+    <li><a href="#fichiers">Les fichiers</a></li>
+    <li><a href="#projet"><span class="file">.vbproj</span> et <span class="file">.sln</span></a></li>
+    <li><a href="#program"><span class="file">Program.vb</span></a></li>
+    <li><a href="#designer">Designer et code</a></li>
+    <li><a href="#menu"><span class="file">frmMenu</span></a></li>
+    <li><a href="#calc1"><span class="file">Frmcalc1</span></a></li>
+    <li><a href="#calc2"><span class="file">Frmcalc2</span></a></li>
+    <li><a href="#concepts">Notions VB.NET</a></li>
+    <li><a href="#lancer">Lancer et dépanner</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <p class="eyebrow">Programmation Avancée · TP 1</p>
+  <h1>Calculatrice <u>Windows Forms</u> en VB.NET</h1>
+  <p class="lede">Explication du projet fichier par fichier. Pour chaque formulaire : ce qu'on voit à l'écran, les propriétés imposées par l'énoncé, et le code ligne par ligne.</p>
+</header>
+
+<!-- ===================== APERÇU ===================== -->
+<section id="apercu">
+  <h2>Vue d'ensemble</h2>
+  <p>L'application s'ouvre sur un <b>menu principal</b>. Deux boutons ouvrent chacun une calculatrice dans une fenêtre <i>modale</i> (le menu est bloqué tant qu'elle est ouverte). Le bouton <b>Fermer</b> du menu quitte l'application.</p>
+  <div class="flow" role="img" aria-label="Program.Main lance frmMenu, qui ouvre Frmcalc1 ou Frmcalc2">
+    <div class="box"><b>Program.Main</b>point d'entrée</div>
+    <span class="arrow">Application.Run →</span>
+    <div class="box"><b>frmMenu</b>Menu principal</div>
+    <span class="arrow">ShowDialog →</span>
+    <div class="box"><b>Frmcalc1</b>Calculatrice simple</div>
+    <span class="arrow">ou</span>
+    <div class="box"><b>Frmcalc2</b>Calculatrice standard</div>
+  </div>
+</section>
+
+<!-- ===================== FICHIERS ===================== -->
+<section id="fichiers">
+  <h2>Les fichiers du dossier</h2>
+  <p>Tout est dans <code>TP1_Calculatrice/</code>. Chaque formulaire est réparti sur <b>deux fichiers</b> : un <code>.Designer.vb</code> (l'interface, normalement généré par Visual Studio) et un <code>.vb</code> (votre code événementiel).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Fichier</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>Calculatrice.sln</code></td><td>La « solution » : c'est ce fichier qu'on ouvre dans Visual Studio.</td></tr>
+      <tr><td><code>Calculatrice.vbproj</code></td><td>Le projet : version de .NET, type d'application, options du compilateur.</td></tr>
+      <tr><td><code>Program.vb</code></td><td>Le point d'entrée <code>Sub Main</code> : règle la langue et ouvre le menu.</td></tr>
+      <tr><td><code>frmMenu.Designer.vb</code></td><td>Interface du menu : 3 boutons, fenêtre non redimensionnable.</td></tr>
+      <tr><td><code>frmMenu.vb</code></td><td>Clics des 3 boutons du menu.</td></tr>
+      <tr><td><code>Frmcalc1.Designer.vb</code></td><td>Interface de la calculatrice simple.</td></tr>
+      <tr><td><code>Frmcalc1.vb</code></td><td>Calcul, filtrage de la saisie (<code>KeyPress</code>), fermeture.</td></tr>
+      <tr><td><code>Frmcalc2.Designer.vb</code></td><td>Interface de la calculatrice standard : afficheur + 23 boutons.</td></tr>
+      <tr><td><code>Frmcalc2.vb</code></td><td>Logique de la calculatrice standard (opérations enchaînées, erreurs, clavier).</td></tr>
+      <tr><td><code>README.md</code></td><td>Mode d'emploi court.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== VBPROJ / SLN ===================== -->
+<section id="projet">
+  <h2>Le projet et la solution <span class="file">Calculatrice.vbproj · Calculatrice.sln</span></h2>
+  <div class="code"><div class="cap"><span>Calculatrice.vbproj</span><button class="copy" type="button">Copier</button></div><pre><code class="xml">&lt;Project Sdk="Microsoft.NET.Sdk"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;OutputType&gt;WinExe&lt;/OutputType&gt;
+    &lt;TargetFramework&gt;net8.0-windows&lt;/TargetFramework&gt;
+    &lt;UseWindowsForms&gt;true&lt;/UseWindowsForms&gt;
+    &lt;RootNamespace&gt;Calculatrice&lt;/RootNamespace&gt;
+    &lt;AssemblyName&gt;Calculatrice&lt;/AssemblyName&gt;
+    &lt;StartupObject&gt;Calculatrice.Program&lt;/StartupObject&gt;
+    &lt;MyType&gt;WindowsFormsWithCustomSubMain&lt;/MyType&gt;
+    &lt;OptionStrict&gt;On&lt;/OptionStrict&gt;
+    &lt;OptionExplicit&gt;On&lt;/OptionExplicit&gt;
+    &lt;EnableWindowsTargeting&gt;true&lt;/EnableWindowsTargeting&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;</code></pre></div>
+  <ul class="explain">
+    <li><b>WinExe</b><span>Application avec fenêtres (pas de console noire au démarrage).</span></li>
+    <li><b>net8.0-windows</b><span>Cible .NET 8, version Windows (obligatoire pour Windows Forms).</span></li>
+    <li><b>UseWindowsForms</b><span>Ajoute les bibliothèques <code>System.Windows.Forms</code> et <code>System.Drawing</code>.</span></li>
+    <li><b>StartupObject</b><span>Indique que le programme démarre par <code>Sub Main</code> du module <code>Program</code>.</span></li>
+    <li><b>MyType</b><span>« Windows Forms avec Sub Main personnalisé » : on écrit soi-même le démarrage au lieu de choisir un formulaire de démarrage dans les propriétés.</span></li>
+    <li><b>OptionStrict On</b><span>Interdit les conversions implicites risquées (par ex. <code>String</code> → <code>Char</code>). Le compilateur détecte plus d'erreurs.</span></li>
+    <li><b>OptionExplicit On</b><span>Toute variable doit être déclarée avec <code>Dim</code>.</span></li>
+    <li><b>EnableWindowsTargeting</b><span>Permet de compiler aussi hors de Windows. Sans effet sur votre PC.</span></li>
+  </ul>
+  <p>Le <code>.sln</code> regroupe un ou plusieurs projets. Il ne contient qu'une référence vers <code>Calculatrice.vbproj</code> et les configurations <i>Debug</i> / <i>Release</i>. Ouvrez toujours le <code>.sln</code> : avec « Ouvrir un dossier », F5 ne sait pas quel programme lancer (erreur « fichier introuvable »).</p>
+</section>
+
+<!-- ===================== PROGRAM ===================== -->
+<section id="program">
+  <h2>Le point d'entrée <span class="file">Program.vb</span></h2>
+  <div class="code"><div class="cap"><span>Program.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">Imports System.Globalization
+Imports System.Windows.Forms
+
+Module Program
+
+    &lt;STAThread&gt;
+    Sub Main()
+        ' La virgule "," est utilisée comme séparateur décimal (culture française)
+        Dim culture As New CultureInfo("fr-FR")
+        CultureInfo.DefaultThreadCurrentCulture = culture
+        CultureInfo.DefaultThreadCurrentUICulture = culture
+        System.Threading.Thread.CurrentThread.CurrentCulture = culture
+        System.Threading.Thread.CurrentThread.CurrentUICulture = culture
+
+        Application.EnableVisualStyles()
+        Application.SetCompatibleTextRenderingDefault(False)
+        Application.Run(New frmMenu())
+    End Sub
+
+End Module</code></pre></div>
+  <ul class="explain">
+    <li><b>Module</b><span>Un module contient des procédures partagées, sans objet à créer. C'est ici que vit <code>Sub Main</code>.</span></li>
+    <li><b>&lt;STAThread&gt;</b><span>Attribut obligatoire pour une application Windows Forms (modèle de thread des fenêtres).</span></li>
+    <li><b>CultureInfo("fr-FR")</b><span>Force le format français : <code>Double.Parse("2,5")</code> donne 2,5 et <code>(0.5).ToString()</code> affiche <code>0,5</code>. L'énoncé demande la virgule, donc le programme fonctionne même sur un PC configuré en anglais.</span></li>
+    <li><b>EnableVisualStyles</b><span>Boutons et zones de texte avec le style moderne de Windows.</span></li>
+    <li><b>Application.Run</b><span>Crée le menu, l'affiche et fait tourner la boucle des événements. Le programme se termine quand ce formulaire se ferme.</span></li>
+  </ul>
+</section>
+
+<!-- ===================== DESIGNER ===================== -->
+<section id="designer">
+  <h2>Designer et code : deux fichiers, une seule classe</h2>
+  <p>Chaque formulaire est une <b>classe</b> qui hérite de <code>Form</code>, écrite en deux morceaux grâce à <code>Partial Class</code>. Le compilateur les assemble.</p>
+  <div class="code"><div class="cap"><span>frmMenu.Designer.vb (extrait)</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">Partial Class frmMenu
+    Inherits System.Windows.Forms.Form
+
+    Private Sub InitializeComponent()
+        Me.Btncalc1 = New System.Windows.Forms.Button()
+        ...
+        Me.Btncalc1.Location = New System.Drawing.Point(45, 25)
+        Me.Btncalc1.Name = "Btncalc1"
+        Me.Btncalc1.Size = New System.Drawing.Size(210, 40)
+        Me.Btncalc1.Text = "&amp;Calculatrice simple"
+        ...
+        Me.Controls.Add(Me.Btncalc1)
+    End Sub
+
+    Friend WithEvents Btncalc1 As System.Windows.Forms.Button
+End Class</code></pre></div>
+  <ul class="explain">
+    <li><b>InitializeComponent</b><span>Crée chaque contrôle, règle ses propriétés (position, taille, texte…) et l'ajoute au formulaire. C'est l'équivalent en code de ce que vous faites à la souris dans la fenêtre Propriétés.</span></li>
+    <li><b>Location / Size</b><span>Position et taille en pixels, depuis le coin haut-gauche de la zone cliente. Les maquettes de ce guide utilisent exactement ces valeurs.</span></li>
+    <li><b>&amp; dans Text</b><span>Le caractère après <code>&amp;</code> est souligné et devient un raccourci : <kbd>Alt</kbd>+<kbd>C</kbd> clique sur « <u>C</u>alculatrice simple ».</span></li>
+    <li><b>WithEvents</b><span>Déclare le contrôle comme pouvant déclencher des événements. Le fichier <code>.vb</code> peut alors écrire <code>Handles Btncalc1.Click</code>.</span></li>
+  </ul>
+  <div class="note"><p>Dans Visual Studio, double-cliquez sur <code>frmMenu.vb</code> pour ouvrir le <b>concepteur</b> visuel ; <kbd>F7</kbd> bascule vers le code. Vous n'avez normalement jamais besoin d'éditer le <code>.Designer.vb</code> à la main.</p></div>
+</section>
+
+<!-- ===================== MENU ===================== -->
+<section id="menu">
+  <h2>1) Le menu principal <span class="file">frmMenu.vb · frmMenu.Designer.vb</span></h2>
+  <div class="mock-row">
+    <div>
+      <div class="win mock" style="width:300px">
+        <div class="bar"><span>Menu principal</span></div>
+        <div class="client" style="height:220px">
+          <div class="ctl btn" style="left:45px;top:25px;width:210px;height:40px"><span class="lab"><u>C</u>alculatrice simple</span><span class="nm">Btncalc1</span></div>
+          <div class="ctl btn" style="left:45px;top:80px;width:210px;height:40px"><span class="lab">Calculatrice <u>s</u>tandard</span><span class="nm">Btncalc2</span></div>
+          <div class="ctl btn" style="left:45px;top:135px;width:210px;height:60px"><span class="lab"><span class="icon-err">✕</span><u>F</u>ermer</span><span class="nm">BtnClose</span></div>
+        </div>
+      </div>
+      <label class="toggle"><input type="checkbox" class="names-toggle" id="names-menu"> Afficher les noms (Name)</label>
+    </div>
+    <div class="mock-side">
+      <div class="tbl"><table>
+        <thead><tr><th>Propriété du formulaire</th><th>Valeur</th></tr></thead>
+        <tbody>
+          <tr><td><code>Name</code></td><td><code>frmMenu</code></td></tr>
+          <tr><td><code>Text</code></td><td>Menu principal</td></tr>
+          <tr><td><code>FormBorderStyle</code></td><td><code>FixedDialog</code> : non redimensionnable</td></tr>
+          <tr><td><code>ControlBox</code></td><td><code>False</code> : pas de menu système ni de croix ✕</td></tr>
+        </tbody>
+      </table></div>
+      <p>Sans croix ✕, le seul moyen de quitter est le bouton <b>Fermer</b>. Son <code>TextImageRelation = ImageAboveText</code> place l'icône au-dessus du texte.</p>
+    </div>
+  </div>
+
+  <div class="code"><div class="cap"><span>frmMenu.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">Public Class frmMenu
+
+    Private Sub frmMenu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Icône représentative pour le bouton Fermer (croix rouge du système)
+        BtnClose.Image = SystemIcons.Error.ToBitmap()
+    End Sub
+
+    ' Ferme l'application
+    Private Sub BtnClose_Click(sender As Object, e As EventArgs) Handles BtnClose.Click
+        Application.Exit()
+    End Sub
+
+    ' Affiche la calculatrice simple
+    Private Sub Btncalc1_Click(sender As Object, e As EventArgs) Handles Btncalc1.Click
+        Using f As New Frmcalc1()
+            f.ShowDialog(Me)
+        End Using
+    End Sub
+
+    ' Affiche la calculatrice standard
+    Private Sub Btncalc2_Click(sender As Object, e As EventArgs) Handles Btncalc2.Click
+        Using f As New Frmcalc2()
+            f.ShowDialog(Me)
+        End Using
+    End Sub
+
+End Class</code></pre></div>
+  <ul class="explain">
+    <li><b>Handles MyBase.Load</b><span>S'exécute une fois, juste avant le premier affichage du menu. On y met l'icône du bouton Fermer. <code>SystemIcons.Error</code> est l'icône d'erreur de Windows : aucun fichier image n'est nécessaire. Dans le concepteur, vous pouvez aussi choisir votre propre image avec la propriété <code>Image</code>.</span></li>
+    <li><b>Application.Exit()</b><span>Ferme toutes les fenêtres et termine le programme.</span></li>
+    <li><b>New Frmcalc1()</b><span>Un formulaire est une classe : on crée un nouvel objet à chaque clic.</span></li>
+    <li><b>ShowDialog(Me)</b><span>Affiche la fenêtre en <i>modal</i> : le code attend ici jusqu'à sa fermeture, et le menu ne répond plus en attendant. <code>Me</code> désigne le menu comme fenêtre propriétaire (la calculatrice se centre dessus).</span></li>
+    <li><b>Using … End Using</b><span>Libère automatiquement les ressources de la fenêtre (<code>Dispose</code>) après sa fermeture.</span></li>
+  </ul>
+</section>
+
+<!-- ===================== CALC1 ===================== -->
+<section id="calc1">
+  <h2>2) La calculatrice simple <span class="file">Frmcalc1.vb · Frmcalc1.Designer.vb</span></h2>
+  <div class="mock-row">
+    <div>
+      <div class="win mock" style="width:280px">
+        <div class="bar"><span>Calculatrice simple</span><span class="x">✕</span></div>
+        <div class="client" style="height:280px">
+          <div class="ctl lbl" style="left:40px;top:30px">Nombre 1</div>
+          <div class="ctl txt" style="left:125px;top:27px;width:105px;height:23px"><span class="lab">12,5</span><span class="nm">txtC1</span></div>
+          <div class="ctl lbl" style="left:40px;top:70px">Nombre 2</div>
+          <div class="ctl txt" style="left:125px;top:67px;width:105px;height:23px"><span class="lab">4</span><span class="nm">txtC2</span></div>
+          <div class="ctl grp" style="left:30px;top:105px;width:220px;height:55px"><span>Opérations</span>
+            <div class="ctl radio" style="left:15px;top:20px"><span class="lab">+</span><span class="nm">optPlus</span></div>
+            <div class="ctl radio" style="left:65px;top:20px"><span class="lab">-</span></div>
+            <div class="ctl radio" style="left:115px;top:20px"><span class="lab">/</span></div>
+            <div class="ctl radio on" style="left:165px;top:20px"><span class="lab">*</span><span class="nm">optMult</span></div>
+          </div>
+          <div class="ctl lbl" style="left:40px;top:180px">Résultat</div>
+          <div class="ctl txt ro" style="left:125px;top:177px;width:105px;height:23px"><span class="lab">50</span><span class="nm">txtRes</span></div>
+          <div class="ctl btn" style="left:40px;top:225px;width:85px;height:28px"><span class="lab"><u>C</u>alculer</span><span class="nm">btncalculer</span></div>
+          <div class="ctl btn" style="left:145px;top:225px;width:85px;height:28px"><span class="lab"><u>F</u>ermer</span><span class="nm">btnclose</span></div>
+        </div>
+      </div>
+      <label class="toggle"><input type="checkbox" class="names-toggle" id="names-calc1"> Afficher les noms (Name)</label>
+    </div>
+    <div class="mock-side">
+      <div class="tbl"><table>
+        <thead><tr><th>Contrôle</th><th>Propriétés clés</th></tr></thead>
+        <tbody>
+          <tr><td><code>Frmcalc1</code></td><td><code>MaximizeBox</code> et <code>MinimizeBox</code> = <code>False</code></td></tr>
+          <tr><td><code>txtC1</code>, <code>txtC2</code></td><td><code>TextAlign = Right</code>, <code>Text = 0</code></td></tr>
+          <tr><td><code>txtRes</code></td><td><code>TextAlign = Right</code>, <code>Text = 0</code>, <code>ReadOnly = True</code></td></tr>
+          <tr><td><code>grpOperations</code></td><td>GroupBox, conteneur de <code>optPlus</code>, <code>optMoins</code>, <code>optDiv</code>, <code>optMult</code></td></tr>
+          <tr><td><code>btncalculer</code></td><td><code>&amp;Calculer</code>, aussi <code>AcceptButton</code> du formulaire : <kbd>Entrée</kbd> calcule</td></tr>
+          <tr><td><code>btnclose</code></td><td><code>&amp;Fermer</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>Les boutons radio d'un même conteneur s'excluent : en cocher un décoche les autres. C'est pour ça qu'on les met dans le <b>GroupBox</b>. <code>optPlus</code> est coché au départ.</p>
+    </div>
+  </div>
+
+  <h3>Fermer la feuille</h3>
+  <div class="code"><div class="cap"><span>Frmcalc1.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    ' Décharge la feuille
+    Private Sub btnclose_Click(sender As Object, e As EventArgs) Handles btnclose.Click
+        Me.Close()
+    End Sub</code></pre></div>
+  <p><code>Me.Close()</code> ferme uniquement cette fenêtre. Le code du menu reprend alors après <code>ShowDialog</code>.</p>
+
+  <h3>Effectuer l'opération sélectionnée</h3>
+  <div class="code"><div class="cap"><span>Frmcalc1.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Sub btncalculer_Click(sender As Object, e As EventArgs) Handles btncalculer.Click
+        Dim a, b As Double
+
+        If Not Double.TryParse(txtC1.Text, a) Then
+            MessageBox.Show("Nombre 1 invalide.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            txtC1.Focus()
+            Return
+        End If
+        If Not Double.TryParse(txtC2.Text, b) Then
+            MessageBox.Show("Nombre 2 invalide.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            txtC2.Focus()
+            Return
+        End If
+
+        If optPlus.Checked Then
+            txtRes.Text = (a + b).ToString()
+        ElseIf optMoins.Checked Then
+            txtRes.Text = (a - b).ToString()
+        ElseIf optMult.Checked Then
+            txtRes.Text = (a * b).ToString()
+        ElseIf optDiv.Checked Then
+            If b = 0 Then
+                MessageBox.Show("Division par zéro impossible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                txtRes.Text = "0"
+            Else
+                txtRes.Text = (a / b).ToString()
+            End If
+        Else
+            MessageBox.Show("Veuillez choisir une opération.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
+    End Sub</code></pre></div>
+  <ul class="explain">
+    <li><b>Double.TryParse</b><span>Essaie de convertir le texte en nombre. Renvoie <code>False</code> au lieu de planter si le texte est vide ou incorrect (par ex. « , » seul). Si la conversion réussit, le nombre est rangé dans <code>a</code> ou <code>b</code>.</span></li>
+    <li><b>Focus() + Return</b><span>Place le curseur dans la zone fautive, puis quitte la procédure sans calculer.</span></li>
+    <li><b>.Checked</b><span>Vaut <code>True</code> pour le bouton radio coché. La chaîne <code>If … ElseIf</code> choisit l'opération.</span></li>
+    <li><b>.ToString()</b><span>Reconvertit le résultat en texte pour l'afficher (avec virgule, grâce à la culture fr-FR).</span></li>
+    <li><b>b = 0</b><span>Avec des <code>Double</code>, diviser par zéro ne plante pas mais donne « +∞ ». On l'interdit donc nous-mêmes avec un message.</span></li>
+  </ul>
+
+  <h3>Filtrer la saisie avec KeyPress</h3>
+  <div class="code"><div class="cap"><span>Frmcalc1.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    ' Filtre la saisie : chiffres, une seule virgule et la touche Retour arrière (vbBack)
+    Private Sub txtC_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtC1.KeyPress, txtC2.KeyPress
+        Dim txt As TextBox = DirectCast(sender, TextBox)
+
+        If Char.IsDigit(e.KeyChar) OrElse e.KeyChar = ControlChars.Back Then   ' ControlChars.Back = vbBack
+            e.Handled = False
+        ElseIf e.KeyChar = ","c AndAlso Not txt.Text.Contains(","c) Then
+            e.Handled = False
+        Else
+            e.Handled = True   ' caractère refusé
+        End If
+    End Sub
+
+    ' Sélectionne tout le contenu à l'entrée dans la zone de texte (pratique pour remplacer le "0")
+    Private Sub txtC_Enter(sender As Object, e As EventArgs) Handles txtC1.Enter, txtC2.Enter
+        DirectCast(sender, TextBox).SelectAll()
+    End Sub</code></pre></div>
+  <ul class="explain">
+    <li><b>Handles A, B</b><span>Une seule procédure gère les deux zones de texte. <code>sender</code> indique laquelle a déclenché l'événement.</span></li>
+    <li><b>DirectCast</b><span><code>sender</code> est de type <code>Object</code>. On le convertit en <code>TextBox</code> pour pouvoir lire sa propriété <code>.Text</code>.</span></li>
+    <li><b>e.KeyChar</b><span>Le caractère de la touche pressée.</span></li>
+    <li><b>e.Handled</b><span><code>True</code> signifie « je m'en occupe » : le caractère n'est <b>pas</b> écrit dans la zone de texte. C'est ainsi qu'on refuse une lettre.</span></li>
+    <li><b>ControlChars.Back</b><span>Le caractère Retour arrière, identique à <code>vbBack</code>. On utilise la version <code>Char</code> car <code>vbBack</code> est une <code>String</code>, et <code>Option Strict</code> refuse de comparer un <code>Char</code> à une <code>String</code>.</span></li>
+    <li><b>","c</b><span>Le suffixe <code>c</code> crée un <code>Char</code> au lieu d'une <code>String</code>. Le test <code>Not txt.Text.Contains(","c)</code> n'autorise qu'<b>une seule</b> virgule.</span></li>
+    <li><b>SelectAll</b><span>Bonus : en entrant dans la zone, le « 0 » est sélectionné et il est remplacé dès qu'on tape.</span></li>
+  </ul>
+</section>
+
+<!-- ===================== CALC2 ===================== -->
+<section id="calc2">
+  <h2>3) La calculatrice standard <span class="file">Frmcalc2.vb · Frmcalc2.Designer.vb</span></h2>
+  <div class="mock-row">
+    <div>
+      <div class="win mock" style="width:300px">
+        <div class="bar"><span>Calculatrice standard</span><span class="x">✕</span></div>
+        <div class="client" style="height:275px" id="calc2mock"></div>
+      </div>
+      <label class="toggle"><input type="checkbox" class="names-toggle" id="names-calc2"> Afficher les noms (Name)</label>
+    </div>
+    <div class="mock-side">
+      <p>L'afficheur <code>txtAffichage</code> est en lecture seule : on ne tape qu'avec les boutons (ou le clavier, voir plus bas).</p>
+      <p>Les boutons du designer ont été générés en grille : colonnes à x = 50, 90, 130, 175, 215 et lignes à y = 100, 140, 180, 220, taille 35 × 32 px.</p>
+      <p>Le formulaire a <code>KeyPreview = True</code> : il reçoit les touches du clavier avant les boutons.</p>
+    </div>
+  </div>
+
+  <h3>L'état de la calculatrice : 4 variables</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private accumulateur As Double = 0           ' premier opérande / résultat intermédiaire
+    Private operateurEnAttente As String = ""    ' opération choisie, en attente du 2ème opérande
+    Private nouvelleSaisie As Boolean = True     ' True : le prochain chiffre remplace l'affichage
+    Private enErreur As Boolean = False          ' un message d'erreur est affiché
+
+    ' Valeur actuellement affichée
+    Private ReadOnly Property ValeurAffichee As Double
+        Get
+            Dim v As Double
+            Double.TryParse(txtAffichage.Text, v)
+            Return v
+        End Get
+    End Property</code></pre></div>
+  <p>Ces variables sont déclarées <b>au niveau de la classe</b> (hors de toute procédure) : elles gardent leur valeur entre deux clics. Une calculatrice doit se souvenir du premier nombre et de l'opération pendant que vous tapez le second.</p>
+  <p><code>ValeurAffichee</code> est une <b>propriété en lecture seule</b> : chaque fois qu'on l'utilise, elle relit l'afficheur et renvoie sa valeur en <code>Double</code>.</p>
+
+  <h3>Exemple pas à pas : 12 + 3 × 2 =</h3>
+  <p>Comme la calculatrice standard de Windows, les opérations s'enchaînent <b>de gauche à droite</b>, sans priorité : 12 + 3 = 15, puis 15 × 2 = 30.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Touche</th><th>Afficheur</th><th>accumulateur</th><th>operateurEnAttente</th><th>nouvelleSaisie</th></tr></thead>
+    <tbody>
+      <tr><td>(départ)</td><td class="num">0</td><td class="num">0</td><td>""</td><td>True</td></tr>
+      <tr><td><kbd>1</kbd> <kbd>2</kbd></td><td class="num">12</td><td class="num">0</td><td>""</td><td>False</td></tr>
+      <tr><td><kbd>+</kbd></td><td class="num">12</td><td class="num">12</td><td>"+"</td><td>True</td></tr>
+      <tr><td><kbd>3</kbd></td><td class="num">3</td><td class="num">12</td><td>"+"</td><td>False</td></tr>
+      <tr><td><kbd>*</kbd></td><td class="num">15</td><td class="num">15</td><td>"*"</td><td>True</td></tr>
+      <tr><td><kbd>2</kbd></td><td class="num">2</td><td class="num">15</td><td>"*"</td><td>False</td></tr>
+      <tr><td><kbd>=</kbd></td><td class="num">30</td><td class="num">0</td><td>""</td><td>True</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Les chiffres</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Sub Chiffre_Click(sender As Object, e As EventArgs) Handles _
+            btn0.Click, btn1.Click, btn2.Click, btn3.Click, btn4.Click,
+            btn5.Click, btn6.Click, btn7.Click, btn8.Click, btn9.Click
+        SaisirChiffre(DirectCast(sender, Button).Text)
+    End Sub
+
+    Private Sub SaisirChiffre(chiffre As String)
+        ReinitialiserSiErreur()
+        If nouvelleSaisie OrElse txtAffichage.Text = "0" Then
+            txtAffichage.Text = chiffre
+        ElseIf txtAffichage.Text = "-0" Then
+            txtAffichage.Text = "-" &amp; chiffre
+        Else
+            txtAffichage.Text &amp;= chiffre
+        End If
+        nouvelleSaisie = False
+    End Sub</code></pre></div>
+  <ul class="explain">
+    <li><b>10 boutons, 1 procédure</b><span>Les 10 chiffres partagent le même gestionnaire. Le texte du bouton cliqué (<code>"7"</code>, <code>"8"</code>…) est le chiffre à ajouter. Le <code>_</code> en fin de ligne continue l'instruction à la ligne suivante.</span></li>
+    <li><b>Remplacer ou ajouter</b><span>Après une opération (<code>nouvelleSaisie = True</code>) ou si l'afficheur montre « 0 », le chiffre <b>remplace</b> l'affichage. Sinon il est <b>ajouté</b> à la fin (<code>&amp;=</code> concatène).</span></li>
+    <li><b>SaisirChiffre séparé</b><span>La saisie est dans sa propre procédure pour que le clavier puisse l'appeler aussi.</span></li>
+  </ul>
+
+  <h3>Virgule, +/-, Retour arrière, CE et C</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Sub btnVirgule_Click(sender As Object, e As EventArgs) Handles btnVirgule.Click
+        ReinitialiserSiErreur()
+        If nouvelleSaisie Then
+            txtAffichage.Text = "0,"
+            nouvelleSaisie = False
+        ElseIf Not txtAffichage.Text.Contains(","c) Then
+            txtAffichage.Text &amp;= ","
+        End If
+    End Sub
+
+    Private Sub btnSigne_Click(sender As Object, e As EventArgs) Handles btnSigne.Click
+        If enErreur Then Return
+        If txtAffichage.Text.StartsWith("-") Then
+            txtAffichage.Text = txtAffichage.Text.Substring(1)
+        ElseIf txtAffichage.Text &lt;&gt; "0" Then
+            txtAffichage.Text = "-" &amp; txtAffichage.Text
+        End If
+    End Sub
+
+    Private Sub btnRetour_Click(sender As Object, e As EventArgs) Handles btnRetour.Click
+        If enErreur Then
+            ReinitialiserSiErreur()
+            Return
+        End If
+        If nouvelleSaisie Then Return   ' on n'efface pas un résultat
+        Dim t As String = txtAffichage.Text.Substring(0, txtAffichage.Text.Length - 1)
+        If t = "" OrElse t = "-" Then
+            txtAffichage.Text = "0"
+            nouvelleSaisie = True
+        Else
+            txtAffichage.Text = t
+        End If
+    End Sub
+
+    ' CE : efface uniquement la saisie en cours
+    Private Sub btnCE_Click(sender As Object, e As EventArgs) Handles btnCE.Click
+        enErreur = False
+        txtAffichage.Text = "0"
+        nouvelleSaisie = True
+    End Sub
+
+    ' C : remise à zéro complète
+    Private Sub btnC_Click(sender As Object, e As EventArgs) Handles btnC.Click
+        enErreur = False
+        accumulateur = 0
+        operateurEnAttente = ""
+        txtAffichage.Text = "0"
+        nouvelleSaisie = True
+    End Sub</code></pre></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Bouton</th><th>Effet</th></tr></thead>
+    <tbody>
+      <tr><td><code>,</code></td><td>Ajoute une virgule, une seule fois. Au début d'un nombre, écrit « 0, ».</td></tr>
+      <tr><td><code>+/-</code></td><td>Ajoute ou enlève le « - » devant le nombre. <code>Substring(1)</code> = le texte sans son 1<sup>er</sup> caractère.</td></tr>
+      <tr><td>Retour arrière</td><td>Supprime le dernier caractère avec <code>Substring(0, Length - 1)</code>. S'il ne reste rien, affiche 0. N'efface pas un résultat déjà calculé.</td></tr>
+      <tr><td><code>CE</code></td><td><i>Clear Entry</i> : efface le nombre en cours mais <b>garde</b> le calcul (ex. 12 + 5 → CE → 3 = donne 15).</td></tr>
+      <tr><td><code>C</code></td><td><i>Clear</i> : remet tout à zéro, y compris l'opération en attente.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Les opérations binaires : + − × ÷ ^</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Function Calculer(a As Double, b As Double, op As String) As Double
+        Select Case op
+            Case "+" : Return a + b
+            Case "-" : Return a - b
+            Case "*" : Return a * b
+            Case "/"
+                If b = 0 Then Throw New DivideByZeroException()
+                Return a / b
+            Case "^" : Return Math.Pow(a, b)
+            Case Else : Return b
+        End Select
+    End Function
+
+    Private Sub Operateur_Click(sender As Object, e As EventArgs) Handles _
+            btnPlus.Click, btnMoins.Click, btnMult.Click, btnDiv.Click, btnPuissance.Click
+        AppliquerOperateur(DirectCast(sender, Button).Text)
+    End Sub
+
+    Private Sub AppliquerOperateur(op As String)
+        If enErreur Then Return
+        Try
+            ' Enchaînement (ex : 2 + 3 * ...) : on calcule d'abord l'opération en attente
+            If Not nouvelleSaisie AndAlso operateurEnAttente &lt;&gt; "" Then
+                accumulateur = Calculer(accumulateur, ValeurAffichee, operateurEnAttente)
+                Afficher(accumulateur)
+                If enErreur Then Return
+            ElseIf operateurEnAttente = "" Then
+                accumulateur = ValeurAffichee
+            End If
+            operateurEnAttente = op
+            nouvelleSaisie = True
+        Catch ex As DivideByZeroException
+            AfficherErreur("Division par zéro impossible")
+        End Try
+    End Sub</code></pre></div>
+  <ul class="explain">
+    <li><b>Function Calculer</b><span>Une <code>Function</code> renvoie une valeur, contrairement à une <code>Sub</code>. <code>Select Case</code> choisit le calcul selon le texte de l'opérateur. <code>Math.Pow(a, b)</code> calcule a<sup>b</sup> (bouton <code>^</code>).</span></li>
+    <li><b>Throw</b><span>En cas de division par zéro, la fonction <b>lève une exception</b> au lieu de renvoyer un résultat faux.</span></li>
+    <li><b>Try … Catch</b><span>Intercepte cette exception et affiche un message d'erreur au lieu de planter le programme.</span></li>
+    <li><b>Les 3 cas</b><span>1) Un nombre a été tapé et une opération attend → on la calcule d'abord (enchaînement). 2) Aucune opération en attente → le nombre affiché devient l'accumulateur. 3) On appuie sur deux opérateurs de suite → seul l'opérateur change.</span></li>
+  </ul>
+
+  <h3>Le bouton =</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Sub Egal()
+        If enErreur OrElse operateurEnAttente = "" Then Return
+        Try
+            Dim resultat As Double = Calculer(accumulateur, ValeurAffichee, operateurEnAttente)
+            operateurEnAttente = ""
+            accumulateur = 0
+            Afficher(resultat)
+            nouvelleSaisie = True
+        Catch ex As DivideByZeroException
+            AfficherErreur("Division par zéro impossible")
+        End Try
+    End Sub</code></pre></div>
+  <p>Calcule <code>accumulateur (opérateur) valeur affichée</code>, affiche le résultat et vide l'opération en attente. Le chiffre tapé ensuite commencera un nouveau nombre.</p>
+
+  <h3>Les opérations unaires : Rac et 1/x</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Sub btnRac_Click(sender As Object, e As EventArgs) Handles btnRac.Click
+        If enErreur Then Return
+        Dim x As Double = ValeurAffichee
+        If x &lt; 0 Then
+            AfficherErreur("Entrée non valide")
+        Else
+            Afficher(Math.Sqrt(x))
+            nouvelleSaisie = True
+        End If
+    End Sub
+
+    Private Sub btnInverse_Click(sender As Object, e As EventArgs) Handles btnInverse.Click
+        If enErreur Then Return
+        Dim x As Double = ValeurAffichee
+        If x = 0 Then
+            AfficherErreur("Division par zéro impossible")
+        Else
+            Afficher(1 / x)
+            nouvelleSaisie = True
+        End If
+    End Sub</code></pre></div>
+  <p>Elles agissent tout de suite sur le nombre affiché, sans attendre <kbd>=</kbd>. La racine d'un nombre négatif et l'inverse de 0 sont interdits. Une opération en attente est conservée : 9 + 16 Rac = donne 9 + 4 = 13.</p>
+
+  <h3>Affichage et gestion des erreurs</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Sub Afficher(valeur As Double)
+        If Double.IsNaN(valeur) OrElse Double.IsInfinity(valeur) Then
+            AfficherErreur("Résultat non défini")
+        Else
+            txtAffichage.Text = valeur.ToString()
+        End If
+    End Sub
+
+    Private Sub AfficherErreur(message As String)
+        txtAffichage.Text = message
+        accumulateur = 0
+        operateurEnAttente = ""
+        nouvelleSaisie = True
+        enErreur = True
+    End Sub
+
+    Private Sub ReinitialiserSiErreur()
+        If enErreur Then
+            enErreur = False
+            txtAffichage.Text = "0"
+            nouvelleSaisie = True
+        End If
+    End Sub</code></pre></div>
+  <ul class="explain">
+    <li><b>NaN / Infinity</b><span>Certains calculs donnent « pas un nombre » (ex. (−8)^0,5) ou l'infini (ex. 10^400). On affiche alors un message au lieu de « NaN » ou « ∞ ».</span></li>
+    <li><b>enErreur</b><span>Pendant qu'un message est affiché, les opérations sont ignorées. Taper un chiffre, la virgule, Retour arrière, CE ou C fait repartir de 0.</span></li>
+  </ul>
+
+  <h3>Bonus : le clavier</h3>
+  <div class="code"><div class="cap"><span>Frmcalc2.vb</span><button class="copy" type="button">Copier</button></div><pre><code class="vb">    Private Sub Frmcalc2_KeyPress(sender As Object, e As KeyPressEventArgs) Handles Me.KeyPress
+        Dim c As Char = e.KeyChar
+        If Char.IsDigit(c) Then
+            SaisirChiffre(c.ToString())
+        ElseIf c = ","c OrElse c = "."c Then
+            btnVirgule.PerformClick()
+        ElseIf "+-*/^".Contains(c) Then
+            AppliquerOperateur(c.ToString())
+        ElseIf c = "="c Then
+            Egal()
+        ElseIf c = ControlChars.Back Then
+            btnRetour.PerformClick()
+        ElseIf c = ChrW(Keys.Escape) Then
+            btnC.PerformClick()
+        Else
+            Return
+        End If
+        e.Handled = True
+    End Sub</code></pre></div>
+  <p>Grâce à <code>KeyPreview = True</code>, le formulaire voit chaque touche. <code>PerformClick()</code> simule un clic sur un bouton. <kbd>Échap</kbd> fait C, <kbd>.</kbd> et <kbd>,</kbd> donnent la virgule.</p>
+</section>
+
+<!-- ===================== CONCEPTS ===================== -->
+<section id="concepts">
+  <h2>Les notions VB.NET à retenir</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Notion</th><th>Dans ce TP</th></tr></thead>
+    <tbody>
+      <tr><td>Événement + <code>Handles</code></td><td>Une procédure s'exécute quand quelque chose arrive : <code>Click</code>, <code>KeyPress</code>, <code>Load</code>, <code>Enter</code>.</td></tr>
+      <tr><td><code>sender</code></td><td>Le contrôle qui a déclenché l'événement. Sert quand plusieurs contrôles partagent une procédure.</td></tr>
+      <tr><td><code>e</code></td><td>Les informations de l'événement : <code>e.KeyChar</code>, <code>e.Handled</code>.</td></tr>
+      <tr><td><code>DirectCast</code></td><td>Convertit <code>Object</code> en type précis (<code>Button</code>, <code>TextBox</code>).</td></tr>
+      <tr><td><code>Show</code> / <code>ShowDialog</code></td><td><code>ShowDialog</code> = modal (bloque la fenêtre parente). <code>Show</code> = non modal.</td></tr>
+      <tr><td><code>Me.Close()</code> / <code>Application.Exit()</code></td><td>Ferme la fenêtre courante / quitte tout le programme.</td></tr>
+      <tr><td><code>TryParse</code></td><td>Conversion texte → nombre sans planter.</td></tr>
+      <tr><td><code>Try … Catch</code> / <code>Throw</code></td><td>Lever puis intercepter une erreur (division par zéro).</td></tr>
+      <tr><td><code>Sub</code> / <code>Function</code> / <code>Property</code></td><td>Action sans résultat / calcul qui renvoie une valeur / valeur calculée qui s'utilise comme une variable.</td></tr>
+      <tr><td>Variables de classe</td><td><code>accumulateur</code> & co. gardent leur valeur entre les clics, contrairement à un <code>Dim</code> dans une procédure.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== LANCER ===================== -->
+<section id="lancer">
+  <h2>Lancer le projet et résoudre les erreurs</h2>
+  <ol class="steps">
+    <li><span>Récupérer le code : <code>git checkout claude/loving-noether-mw3cmd</code> (ou <code>git pull</code> si la pull request a été fusionnée dans <code>main</code>).</span></li>
+    <li><span>Double-cliquer sur <code>TP1_Calculatrice\Calculatrice.sln</code>.</span></li>
+    <li><span>Dans l'Explorateur de solutions, clic droit sur <b>Calculatrice</b> → <b>Définir comme projet de démarrage</b>.</span></li>
+    <li><span>Appuyer sur <kbd>F5</kbd>.</span></li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th>Message</th><th>Cause et solution</th></tr></thead>
+    <tbody>
+      <tr><td>« Le fichier spécifié est introuvable » à F5</td><td>Le dossier ou un fichier <code>.vb</code> a été ouvert à la place de la solution. Ouvrez le <code>.sln</code>.</td></tr>
+      <tr><td>« SDK net8.0 introuvable » / projet non chargé</td><td>Visual Studio Installer → Modifier → cocher <b>Développement .NET Desktop</b>.</td></tr>
+      <tr><td>Erreurs de génération</td><td>Affichage → <b>Liste d'erreurs</b> : lire la première erreur, elle explique souvent les suivantes.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>TP 1 · Programmation Avancée · projet <code>TP1_Calculatrice</code> du dépôt <code>Anibaa/career-journey-w2</code>.</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  // Build the Frmcalc2 mock-up from its designer coordinates
+  var host = document.getElementById("calc2mock");
+  var html = '<div class="ctl txt ro" style="left:50px;top:15px;width:200px;height:27px;font-size:15px;background:var(--ctl)"><span class="lab">30</span><span class="nm">txtAffichage</span></div>';
+  [["btnRetour", "Retour arrière", 50, 90], ["btnCE", "CE", 150, 45], ["btnC", "C", 205, 45]].forEach(function (b) {
+    html += '<div class="ctl btn red" style="left:' + b[2] + 'px;top:55px;width:' + b[3] + 'px;height:32px"><span class="lab">' + b[1] + '</span><span class="nm">' + b[0] + '</span></div>';
+  });
+  var grid = [["7", "8", "9", "/", "^"], ["4", "5", "6", "*", "Rac"], ["1", "2", "3", "-", "1/x"], ["0", "+/-", ",", "+", "="]];
+  var names = { "/": "btnDiv", "*": "btnMult", "-": "btnMoins", "+": "btnPlus", "^": "btnPuissance", "Rac": "btnRac", "1/x": "btnInverse", "=": "btnEgal", "+/-": "btnSigne", ",": "btnVirgule" };
+  var xs = [50, 90, 130, 175, 215];
+  grid.forEach(function (row, r) {
+    row.forEach(function (t, c) {
+      var n = names[t] || "btn" + t;
+      html += '<div class="ctl btn" style="left:' + xs[c] + 'px;top:' + (100 + r * 40) + 'px;width:35px;height:32px"><span class="lab">' + t + '</span><span class="nm" style="font-size:7.5px">' + n.replace("btn", "btn<br>") + '</span></div>';
+    });
+  });
+  host.innerHTML = html;
+
+  // Toggle control names on each mock-up
+  document.querySelectorAll(".names-toggle").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      cb.closest("div").querySelector(".win").classList.toggle("names", cb.checked);
+    });
+  });
+
+  // Minimal VB.NET syntax highlighting
+  var KW = "AndAlso|As|Boolean|ByVal|Case|Catch|Char|Class|Dim|DirectCast|Double|Else|ElseIf|End|False|Finally|Friend|Function|Get|Handles|If|Imports|Inherits|Me|Module|MyBase|New|Not|Nothing|OrElse|Overrides|Partial|Private|Property|Protected|Public|ReadOnly|Return|Select|String|Sub|Then|Throw|True|Try|Using|WithEvents|Object";
+  var re = new RegExp('("(?:[^"]|"")*"c?)|(\'.*$)|\\b(' + KW + ')\\b|\\b(\\d+(?:\\.\\d+)?)\\b', "gm");
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  document.querySelectorAll("code.vb").forEach(function (el) {
+    var src = el.textContent, out = "", last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      var cls = m[1] ? "s" : m[2] ? "c" : m[3] ? "k" : "n";
+      out += '<span class="' + cls + '">' + esc(m[0]) + "</span>";
+      last = re.lastIndex;
+    }
+    el.innerHTML = out + esc(src.slice(last));
+  });
+
+  // Copy buttons
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var code = btn.closest(".code").querySelector("code");
+      var text = code.textContent;
+      var done = function () { btn.textContent = "Copié"; setTimeout(function () { btn.textContent = "Copier"; }, 1500); };
+      var fallback = function () {
+        var r = document.createRange(); r.selectNodeContents(code);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        btn.textContent = "Ctrl+C pour copier";
+      };
+      try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+})();
+</script>
