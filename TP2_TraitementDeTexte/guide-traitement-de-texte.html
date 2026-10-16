@@ -1,0 +1,728 @@
+<title>Guide TP2 Traitement de texte</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same family as the TP1 guide (reading column + sticky index), C# violet accent; WinForms mock-ups at real designer coordinates, the editor one is live. */
+:root {
+  --paper: #f6f6fa;
+  --sheet: #ffffff;
+  --ink: #1d1f2e;
+  --muted: #5d6178;
+  --rule: #dcdde8;
+  --accent: #6a3fb5;
+  --accent-soft: #efe9fa;
+  --code-bg: #f1f1f7;
+  --kw: #1d4fb8;
+  --typ: #0f7b7b;
+  --str: #9a3412;
+  --com: #2f7d4f;
+  --num: #a2337a;
+  --win-title: #f3f3f3;
+  --win-title-fg: #1d1f2e;
+  --win-body: #f0f0f0;
+  --ctl: #ffffff;
+  --ctl-border: #8e93a6;
+  --ctl-fg: #1d1f2e;
+  --ok: #217a45;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #131420; --sheet: #1a1c2a; --ink: #e6e6f0; --muted: #a0a3b8; --rule: #2e3043;
+    --accent: #b394f0; --accent-soft: #2b2342; --code-bg: #10111b;
+    --kw: #7aa7ff; --typ: #5fd0c8; --str: #f2a37a; --com: #79c79a; --num: #f08cc8;
+    --win-title: #2a2c3a; --win-title-fg: #e6e6f0; --win-body: #252736; --ctl: #33364a; --ctl-border: #5c6078; --ctl-fg: #e6e6f0; --ok: #6fd39a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #131420; --sheet: #1a1c2a; --ink: #e6e6f0; --muted: #a0a3b8; --rule: #2e3043;
+  --accent: #b394f0; --accent-soft: #2b2342; --code-bg: #10111b;
+  --kw: #7aa7ff; --typ: #5fd0c8; --str: #f2a37a; --com: #79c79a; --num: #f08cc8;
+  --win-title: #2a2c3a; --win-title-fg: #e6e6f0; --win-body: #252736; --ctl: #33364a; --ctl-border: #5c6078; --ctl-fg: #e6e6f0; --ok: #6fd39a;
+  color-scheme: dark;
+}
+
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+.wrap {
+  max-width: 1160px; margin: 0 auto;
+  padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px;
+}
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; } nav.toc { position: static !important; } }
+
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 14px; }
+nav.toc p { font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--ink); text-decoration: none; border-left: 2px solid transparent; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); border-left-color: var(--accent); outline: none; }
+nav.toc .file { font-family: var(--mono); font-size: 12.5px; }
+
+main { min-width: 0; }
+header.hero { padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
+.eyebrow { font: 600 12px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+h1 { font: 800 clamp(34px, 6vw, 54px)/1.02 var(--display); font-stretch: 80%; margin: 0 0 14px; text-wrap: balance; letter-spacing: -.01em; }
+h1 u { text-decoration-color: var(--accent); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+.lede { font-size: 18px; color: var(--muted); max-width: 62ch; margin: 0; }
+section { padding-top: 40px; }
+h2 { font: 750 30px/1.15 var(--display); font-stretch: 85%; margin: 0 0 6px; text-wrap: balance; }
+h2 .file { font: 500 15px/1 var(--mono); color: var(--muted); display: block; margin-top: 8px; }
+h3 { font: 700 20px/1.25 var(--display); font-stretch: 90%; margin: 28px 0 8px; }
+p, li { max-width: 68ch; }
+p { margin: 0 0 14px; }
+code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+kbd { font-family: var(--mono); font-size: .85em; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--sheet); }
+
+.code { margin: 14px 0 18px; border: 1px solid var(--rule); border-radius: 8px; background: var(--code-bg); overflow: hidden; }
+.code .cap { display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 500 12px/1 var(--mono); color: var(--muted); padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+.code pre { margin: 0; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.55 var(--mono); tab-size: 4; }
+.code pre code { background: none; padding: 0; font-size: inherit; }
+.k { color: var(--kw); font-weight: 500; } .t { color: var(--typ); } .s { color: var(--str); } .c { color: var(--com); font-style: italic; } .n { color: var(--num); }
+.copy { font: 500 12px/1 var(--body); color: var(--muted); background: var(--sheet); border: 1px solid var(--rule); border-radius: 5px; padding: 5px 9px; cursor: pointer; }
+.copy:hover, .copy:focus-visible { color: var(--ink); border-color: var(--accent); outline: none; }
+
+.explain { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 8px; }
+.explain li { display: grid; grid-template-columns: minmax(120px, max-content) minmax(0, 1fr); gap: 4px 14px; padding: 10px 0; border-top: 1px dashed var(--rule); max-width: none; }
+.explain li > b { font: 500 13.5px/1.5 var(--mono); color: var(--accent); }
+@media (max-width: 560px) { .explain li { grid-template-columns: minmax(0, 1fr); } }
+
+.tbl { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--sheet); }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 11.5px/1.2 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--code-bg); }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0 20px; max-width: 68ch; }
+.note p:last-child { margin: 0; }
+
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 20px 0 8px; }
+.flow .box { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+.flow .box b { display: block; font: 500 14px/1.3 var(--mono); }
+.flow .arrow { color: var(--muted); font: 500 13px/1 var(--mono); }
+
+/* WinForms mock-ups */
+.mock-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; margin: 18px 0 22px; }
+.mock-side { flex: 1 1 260px; min-width: 0; }
+.scroll { max-width: 100%; overflow-x: auto; padding: 4px 4px 14px; }
+.win { flex: 0 0 auto; border: 1px solid var(--ctl-border); border-radius: 6px; box-shadow: 0 6px 22px rgba(20, 20, 50, .14); overflow: hidden; font: 12px/1.2 "Segoe UI", var(--body); background: var(--win-body); }
+.win .bar { background: var(--win-title); color: var(--win-title-fg); padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; border-bottom: 1px solid var(--rule); }
+.win .bar .btns { display: flex; gap: 14px; color: var(--muted); font-size: 12px; }
+.win .client { position: relative; }
+.ctl { position: absolute; box-sizing: border-box; color: var(--ctl-fg); }
+.ctl.btn { background: var(--ctl); border: 1px solid var(--ctl-border); border-radius: 3px; display: grid; place-items: center; text-align: center; font: 12px/1.1 "Segoe UI", var(--body); cursor: pointer; padding: 0 2px; }
+.ctl.btn:hover, .ctl.btn:focus-visible { border-color: var(--accent); outline: none; }
+.ctl.txt { background: var(--ctl); border: 1px solid var(--ctl-border); padding: 3px 5px; font: 12px/1.3 "Segoe UI", var(--body); }
+.ctl.lbl { font-size: 12px; }
+.ctl.grp { border: 1px solid var(--ctl-border); border-radius: 4px; }
+.ctl.grp > .gt { position: absolute; top: -8px; left: 8px; background: var(--win-body); padding: 0 4px; font-size: 11.5px; }
+textarea.ctl, input.ctl { resize: none; color: var(--ctl-fg); margin: 0; }
+textarea.ctl:focus, input.ctl:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.ctl.list { background: var(--ctl); border: 1px solid var(--ctl-border); overflow-y: auto; padding: 3px 0; font: 12px/1.35 "Segoe UI", var(--body); }
+.ctl.list div { padding: 0 6px; white-space: nowrap; }
+.ctl u { text-decoration-thickness: 1px; }
+.ctx { position: absolute; background: var(--ctl); border: 1px solid var(--ctl-border); box-shadow: 0 4px 12px rgba(20, 20, 50, .18); padding: 3px 0; font-size: 12px; min-width: 110px; z-index: 2; }
+.ctx div { padding: 4px 22px; }
+.ctx div.off { color: var(--muted); opacity: .6; }
+.status { font-size: 13.5px; color: var(--muted); margin-top: 8px; min-height: 1.4em; }
+.status b { color: var(--ok); font-weight: 600; }
+
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 12px 0 20px; display: grid; gap: 10px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; }
+.steps li::before { content: counter(s); font: 700 13px/28px var(--display); width: 28px; height: 28px; text-align: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <p>Sommaire</p>
+  <ol>
+    <li><a href="#apercu">Vue d'ensemble</a></li>
+    <li><a href="#fichiers">Les fichiers</a></li>
+    <li><a href="#projet"><span class="file">Program.cs</span> et projet</a></li>
+    <li><a href="#designer">Designer et événements</a></li>
+    <li><a href="#auth"><span class="file">frmAuth</span></a></li>
+    <li><a href="#edit"><span class="file">Frmedit</span></a></li>
+    <li><a href="#dico">Le dictionnaire</a></li>
+    <li><a href="#enregistrer">Enregistrer</a></li>
+    <li><a href="#menu">Menu contextuel</a></li>
+    <li><a href="#concepts">Notions C#</a></li>
+    <li><a href="#lancer">Lancer et dépanner</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <p class="eyebrow">Programmation Avancée · TP 2</p>
+  <h1>Traitement de texte en <u>C# Windows Forms</u></h1>
+  <p class="lede">Une fenêtre de connexion, puis un éditeur qui compte les mots et construit un dictionnaire. Chaque fichier est expliqué ici, avec le code et une maquette de l'éditeur que vous pouvez essayer.</p>
+</header>
+
+<!-- ===================== APERÇU ===================== -->
+<section id="apercu">
+  <h2>Vue d'ensemble</h2>
+  <p>Le programme s'ouvre sur <b>frmAuth</b>. Si le login et le mot de passe sont bons (<code>admin</code> / <code>1234</code>), la fenêtre de connexion se cache et l'<b>éditeur</b> s'ouvre. Quand l'éditeur se ferme, le programme se termine.</p>
+  <div class="flow" role="img" aria-label="Program.Main lance frmAuth, qui ouvre Frmedit si les identifiants sont corrects">
+    <div class="box"><b>Program.Main</b>point d'entrée</div>
+    <span class="arrow">Application.Run →</span>
+    <div class="box"><b>frmAuth</b>Authentification</div>
+    <span class="arrow">identifiants OK → ShowDialog →</span>
+    <div class="box"><b>Frmedit</b>Editeur</div>
+  </div>
+  <p>Ce TP est écrit en <b>C#</b> car l'énoncé donne ses exemples en C# (<code>private void</code>, <code>using System.IO;</code>, <code>Clipboard.cs</code>). Le TP1 était en VB.NET.</p>
+</section>
+
+<!-- ===================== FICHIERS ===================== -->
+<section id="fichiers">
+  <h2>Les fichiers du dossier</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Fichier</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>TraitementDeTexte.sln</code></td><td>La solution : c'est ce fichier qu'on ouvre dans Visual Studio.</td></tr>
+      <tr><td><code>TraitementDeTexte.csproj</code></td><td>Le projet : .NET 8, application Windows Forms.</td></tr>
+      <tr><td><code>Program.cs</code></td><td>Point d'entrée <code>Main</code> : règle la langue française et ouvre <code>frmAuth</code>.</td></tr>
+      <tr><td><code>frmAuth.Designer.cs</code></td><td>Interface de connexion : 2 labels, 2 zones de texte, 2 boutons.</td></tr>
+      <tr><td><code>frmAuth.cs</code></td><td>Vérification des identifiants (Ok) et sortie (Annuler).</td></tr>
+      <tr><td><code>Frmedit.Designer.cs</code></td><td>Interface de l'éditeur : 2 GroupBox, zone de texte, ListBox, boutons, <code>SaveFileDialog</code>, menu <code>Mnu</code>.</td></tr>
+      <tr><td><code>Frmedit.cs</code></td><td>Comptage des mots, dictionnaire, Effacer / Enregistrer / Quitter, copier / couper / coller.</td></tr>
+      <tr><td><code>Clipboard.cs</code></td><td>Classe avec la variable <code>public static string copier</code> (partie optionnelle).</td></tr>
+      <tr><td><code>README.md</code></td><td>Mode d'emploi court.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== PROJET / PROGRAM ===================== -->
+<section id="projet">
+  <h2>Le projet et le point d'entrée <span class="file">TraitementDeTexte.csproj · Program.cs</span></h2>
+  <div class="code"><div class="cap"><span>TraitementDeTexte.csproj</span><button class="copy" type="button">Copier</button></div><pre><code class="xml">&lt;Project Sdk="Microsoft.NET.Sdk"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;OutputType&gt;WinExe&lt;/OutputType&gt;
+    &lt;TargetFramework&gt;net8.0-windows&lt;/TargetFramework&gt;
+    &lt;UseWindowsForms&gt;true&lt;/UseWindowsForms&gt;
+    &lt;RootNamespace&gt;TraitementDeTexte&lt;/RootNamespace&gt;
+    &lt;AssemblyName&gt;TraitementDeTexte&lt;/AssemblyName&gt;
+    &lt;ImplicitUsings&gt;disable&lt;/ImplicitUsings&gt;
+    &lt;Nullable&gt;disable&lt;/Nullable&gt;
+    &lt;EnableWindowsTargeting&gt;true&lt;/EnableWindowsTargeting&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;</code></pre></div>
+  <ul class="explain">
+    <li><b>WinExe</b><span>Application à fenêtres, sans console.</span></li>
+    <li><b>net8.0-windows</b><span>.NET 8 pour Windows, nécessaire pour Windows Forms.</span></li>
+    <li><b>RootNamespace</b><span>Toutes les classes sont dans l'espace de noms <code>TraitementDeTexte</code>.</span></li>
+    <li><b>ImplicitUsings disable</b><span>Chaque fichier écrit lui-même ses <code>using</code> (comme dans l'énoncé : <code>using System.IO;</code>). On voit ainsi d'où vient chaque classe.</span></li>
+    <li><b>Nullable disable</b><span>Désactive les avertissements « peut être null » des versions récentes de C#. Le code reste proche du cours.</span></li>
+  </ul>
+
+  <div class="code"><div class="cap"><span>Program.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">using System;
+using System.Globalization;
+using System.Threading;
+using System.Windows.Forms;
+
+namespace TraitementDeTexte
+{
+    internal static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            // Culture française : tri alphabétique correct des mots accentués (é, è, à...)
+            CultureInfo culture = new CultureInfo("fr-FR");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new frmAuth());
+        }
+    }
+}</code></pre></div>
+  <ul class="explain">
+    <li><b>static void Main</b><span>La première méthode exécutée. <code>[STAThread]</code> est obligatoire pour Windows Forms.</span></li>
+    <li><b>fr-FR</b><span>Le dictionnaire est trié selon la culture courante. En français, « séparateurs » vient avant « servira » (le é est rangé avec le e). Sans ça, l'ordre dépendrait de la langue du PC.</span></li>
+    <li><b>Application.Run</b><span>Affiche <code>frmAuth</code> et fait tourner le programme jusqu'à sa fermeture.</span></li>
+  </ul>
+</section>
+
+<!-- ===================== DESIGNER ===================== -->
+<section id="designer">
+  <h2>Designer et événements en C#</h2>
+  <p>Comme au TP1, chaque formulaire est une classe en deux morceaux (<code>partial class</code>) : le fichier <code>.Designer.cs</code> crée l'interface, le fichier <code>.cs</code> contient votre code.</p>
+  <p>Différence avec VB.NET : C# n'a pas de <code>Handles</code>. Un bouton est relié à sa méthode par <code>+=</code> dans le Designer :</p>
+  <div class="code"><div class="cap"><span>frmAuth.Designer.cs (extrait)</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">this.btnOk.Text = "&amp;Ok";
+this.btnOk.Click += new System.EventHandler(this.btnOk_Click);</code></pre></div>
+  <div class="note"><p>Dans Visual Studio, ce lien est créé automatiquement quand vous double-cliquez sur un bouton dans le Concepteur. Si vous renommez ou supprimez une méthode à la main, supprimez aussi la ligne <code>+=</code> correspondante, sinon le projet ne compile plus.</p></div>
+</section>
+
+<!-- ===================== AUTH ===================== -->
+<section id="auth">
+  <h2>1) L'authentification <span class="file">frmAuth.cs · frmAuth.Designer.cs</span></h2>
+  <div class="mock-row">
+    <div>
+      <div class="win" style="width:300px">
+        <div class="bar"><span>Authentification</span><span class="btns">✕</span></div>
+        <form class="client" style="height:260px" id="authForm" autocomplete="off">
+          <label class="ctl lbl" for="mockLogin" style="left:60px;top:40px">Login</label>
+          <input class="ctl txt" id="mockLogin" style="left:60px;top:60px;width:180px;height:23px" value="admin">
+          <label class="ctl lbl" for="mockPass" style="left:60px;top:100px">Mot de passe</label>
+          <input class="ctl txt" id="mockPass" type="password" style="left:60px;top:120px;width:180px;height:23px" value="1234">
+          <button class="ctl btn" type="submit" style="left:60px;top:190px;width:85px;height:30px"><span><u>O</u>k</span></button>
+          <button class="ctl btn" type="button" id="mockAnnuler" style="left:155px;top:190px;width:85px;height:30px"><span><u>A</u>nnuler</span></button>
+        </form>
+      </div>
+      <p class="status" id="authStatus" aria-live="polite">Essayez : cliquez sur Ok, puis changez le mot de passe.</p>
+    </div>
+    <div class="mock-side">
+      <div class="tbl"><table>
+        <thead><tr><th>Contrôle</th><th>Propriétés clés</th></tr></thead>
+        <tbody>
+          <tr><td><code>frmAuth</code></td><td><code>FormBorderStyle = FixedDialog</code>, <code>MinimizeBox</code> et <code>MaximizeBox = false</code>, titre « Authentification »</td></tr>
+          <tr><td><code>txtLogin</code></td><td>Zone de saisie du login</td></tr>
+          <tr><td><code>Txtpass</code></td><td><code>PasswordChar = '*'</code> : chaque caractère s'affiche comme une étoile</td></tr>
+          <tr><td><code>btnOk</code></td><td><code>&amp;Ok</code>, aussi <code>AcceptButton</code> : <kbd>Entrée</kbd> valide</td></tr>
+          <tr><td><code>btnAnnuler</code></td><td><code>&amp;Annuler</code>, aussi <code>CancelButton</code> : <kbd>Échap</kbd> quitte</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="code"><div class="cap"><span>frmAuth.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">public partial class frmAuth : Form
+{
+    // Login et mot de passe attendus
+    private const string LOGIN = "admin";
+    private const string MOT_DE_PASSE = "1234";
+
+    public frmAuth()
+    {
+        InitializeComponent();
+    }
+
+    // Ok : vérifie le login et le mot de passe avant de charger Frmedit
+    private void btnOk_Click(object sender, EventArgs e)
+    {
+        if (txtLogin.Text == LOGIN &amp;&amp; Txtpass.Text == MOT_DE_PASSE)
+        {
+            this.Hide();
+            using (Frmedit f = new Frmedit())
+            {
+                f.ShowDialog();
+            }
+            this.Close();   // quand l'éditeur se ferme, l'application se termine
+        }
+        else
+        {
+            MessageBox.Show("Login ou mot de passe incorrect.", "Erreur",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Txtpass.Clear();
+            Txtpass.Focus();
+        }
+    }
+
+    // Annuler : quitte l'application
+    private void btnAnnuler_Click(object sender, EventArgs e)
+    {
+        Application.Exit();
+    }
+}</code></pre></div>
+  <ul class="explain">
+    <li><b>const string</b><span>Constantes : les identifiants attendus, écrits une seule fois en haut de la classe. Changez-les ici pour choisir votre propre login.</span></li>
+    <li><b>public frmAuth()</b><span>Le <b>constructeur</b>, appelé par <code>new frmAuth()</code>. <code>InitializeComponent()</code> crée les contrôles du Designer.</span></li>
+    <li><b>&amp;&amp;</b><span>« ET » logique : les deux conditions doivent être vraies.</span></li>
+    <li><b>this.Hide()</b><span>Cache la fenêtre de connexion sans la détruire. Si on la fermait, <code>Application.Run</code> se terminerait et le programme s'arrêterait.</span></li>
+    <li><b>ShowDialog()</b><span>Ouvre l'éditeur et <b>attend</b> sa fermeture. Ensuite <code>this.Close()</code> ferme la connexion, ce qui termine le programme.</span></li>
+    <li><b>using (…)</b><span>Libère les ressources de l'éditeur (<code>Dispose</code>) une fois fermé.</span></li>
+    <li><b>else</b><span>Mauvais identifiants : message d'erreur, mot de passe effacé, curseur replacé dans <code>Txtpass</code>.</span></li>
+  </ul>
+</section>
+
+<!-- ===================== EDITEUR ===================== -->
+<section id="edit">
+  <h2>2) L'éditeur <span class="file">Frmedit.cs · Frmedit.Designer.cs</span></h2>
+  <p>Maquette fonctionnelle : tapez dans la zone de gauche, le nombre de mots change à chaque frappe. Cliquez sur « Mettre à jour le dictionnaire » pour remplir la liste. Le clic droit dans la zone ouvre le menu Copier / Couper / Coller. Le calcul est le même que celui du programme C#.</p>
+  <div class="scroll">
+    <div class="win" style="width:677px">
+      <div class="bar"><span>Editeur</span><span class="btns">—&nbsp;&nbsp;✕</span></div>
+      <div class="client" style="height:404px" id="editClient">
+        <div class="ctl grp" style="left:12px;top:12px;width:380px;height:380px"><span class="gt">Texte à saisir</span>
+          <label for="mockTxt" class="ctl" style="left:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Texte à saisir</label>
+          <textarea class="ctl txt" id="mockTxt" spellcheck="false" style="left:10px;top:22px;width:360px;height:290px">Ce texte est un exemple. Cet exemple vous servira de modèle. Le modèle contient des mots et des séparateurs. Le dictionnaire ne devra contenir que les mots.</textarea>
+          <div class="ctl lbl" id="mockNb" style="left:10px;top:320px">Nombre de mots : 0</div>
+          <button class="ctl btn" type="button" id="mockEffacer" style="left:115px;top:342px;width:80px;height:28px"><span><u>E</u>ffacer</span></button>
+          <button class="ctl btn" type="button" id="mockEnreg" style="left:202px;top:342px;width:80px;height:28px"><span>E<u>n</u>registrer</span></button>
+          <button class="ctl btn" type="button" id="mockQuitter" style="left:290px;top:342px;width:80px;height:28px"><span><u>Q</u>uitter</span></button>
+        </div>
+        <div class="ctl grp" style="left:405px;top:12px;width:260px;height:380px"><span class="gt">Dictionnaire</span>
+          <div class="ctl list" id="mockList" role="list" aria-label="Dictionnaire" style="left:10px;top:22px;width:240px;height:310px"></div>
+          <button class="ctl btn" type="button" id="mockMaj" style="left:30px;top:342px;width:200px;height:28px"><span><u>M</u>ettre à jour le dictionnaire</span></button>
+        </div>
+        <div class="ctx" id="mockCtx" hidden>
+          <div data-act="copier">Copier</div>
+          <div data-act="couper">Couper</div>
+          <div data-act="coller">Coller</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="status" id="editStatus" aria-live="polite"></p>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Contrôle</th><th>Propriétés clés</th></tr></thead>
+    <tbody>
+      <tr><td><code>Frmedit</code></td><td>Titre « Editeur », <code>FixedSingle</code>, <code>MaximizeBox = false</code></td></tr>
+      <tr><td><code>groupBox1</code> / <code>groupBox2</code></td><td>« Texte à saisir » et « Dictionnaire » : séparent le formulaire en deux zones</td></tr>
+      <tr><td><code>Txt_saisir</code></td><td><code>Multiline = true</code>, <code>ScrollBars = Vertical</code>, <code>ContextMenuStrip = Mnu</code></td></tr>
+      <tr><td><code>lblNbMots</code></td><td>Affiche « Nombre de mots : n »</td></tr>
+      <tr><td><code>btn_effacer</code>, <code>btn_enregistrer</code>, <code>btn_quitter</code></td><td>Effacer, Enregistrer, Quitter</td></tr>
+      <tr><td><code>lstDictionnaire</code></td><td>ListBox : un mot et son nombre de répétitions par ligne</td></tr>
+      <tr><td><code>btn_maj</code></td><td>Mettre à jour le dictionnaire</td></tr>
+      <tr><td><code>saveFileDialog1</code>, <code>Mnu</code></td><td>Composants non visibles (en bas du Concepteur) : boîte « Enregistrer sous » et menu contextuel</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Qu'est-ce qu'un mot ? L'expression régulière</h3>
+  <div class="code"><div class="cap"><span>Frmedit.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">// Un mot = une suite de lettres (accents compris) ou de chiffres.
+// Tout le reste (espaces, ponctuation, retours à la ligne...) est un séparateur.
+private static readonly Regex regexMot = new Regex(@"[\p{L}\p{M}\p{N}]+");</code></pre></div>
+  <ul class="explain">
+    <li><b>Regex</b><span>Une <b>expression régulière</b> décrit un motif de texte. Elle vient de <code>using System.Text.RegularExpressions;</code>.</span></li>
+    <li><b>[ … ]+</b><span>« un ou plusieurs caractères parmi… ». Chaque bloc trouvé est un mot.</span></li>
+    <li><b>\p{L} \p{M} \p{N}</b><span>Toute lettre (y compris é, è, ç), les accents combinés, et tout chiffre. Les espaces, points, virgules, apostrophes ne correspondent pas : ce sont les séparateurs.</span></li>
+    <li><b>@"…"</b><span>Chaîne « verbatim » : le <code>\</code> est pris tel quel, pas besoin d'écrire <code>\\p</code>.</span></li>
+    <li><b>static readonly</b><span>Créée une seule fois pour toute la classe, et non modifiable ensuite.</span></li>
+  </ul>
+
+  <h3>Compter les mots au fur et à mesure (TextChanged)</h3>
+  <div class="code"><div class="cap"><span>Frmedit.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">private void Frmedit_Load(object sender, EventArgs e)
+{
+    AfficherNombreDeMots();
+    MettreAJourDictionnaire();
+}
+
+// ---------- Nombre de mots (mis à jour au fur et à mesure de la saisie) ----------
+private void Txt_saisir_TextChanged(object sender, EventArgs e)
+{
+    AfficherNombreDeMots();
+}
+
+private void AfficherNombreDeMots()
+{
+    int nb = regexMot.Matches(Txt_saisir.Text).Count;
+    lblNbMots.Text = "Nombre de mots : " + nb;
+}</code></pre></div>
+  <p>L'énoncé propose deux événements. <code>TextChanged</code> se déclenche à <b>chaque modification</b> du texte : le compteur est toujours à jour. <code>Validated</code> ne se déclencherait qu'en <b>quittant</b> la zone de texte. On a choisi <code>TextChanged</code>.</p>
+  <p><code>regexMot.Matches(…)</code> renvoie tous les mots trouvés ; <code>.Count</code> donne leur nombre. Au chargement (<code>Load</code>), le compteur et le dictionnaire sont calculés une première fois pour le texte d'exemple.</p>
+
+  <h3>Effacer et Quitter</h3>
+  <div class="code"><div class="cap"><span>Frmedit.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">private void btn_effacer_Click(object sender, EventArgs e)
+{
+    Txt_saisir.Clear();
+    Txt_saisir.Focus();
+}
+
+private void btn_quitter_Click(object sender, EventArgs e)
+{
+    this.Close();
+}</code></pre></div>
+  <p><code>Clear()</code> vide la zone (le compteur passe à 0 grâce à <code>TextChanged</code>). <code>this.Close()</code> ferme l'éditeur ; comme vu plus haut, <code>frmAuth</code> se ferme ensuite et le programme se termine.</p>
+</section>
+
+<!-- ===================== DICO ===================== -->
+<section id="dico">
+  <h2>Le dictionnaire</h2>
+  <div class="code"><div class="cap"><span>Frmedit.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">private void btn_maj_Click(object sender, EventArgs e)
+{
+    MettreAJourDictionnaire();
+}
+
+private void MettreAJourDictionnaire()
+{
+    // Compte les répétitions de chaque mot (en minuscules : "Le" et "le" = même mot).
+    // SortedDictionary garde les mots triés dans l'ordre alphabétique français.
+    SortedDictionary&lt;string, int&gt; dico = new SortedDictionary&lt;string, int&gt;(StringComparer.CurrentCulture);
+
+    foreach (Match m in regexMot.Matches(Txt_saisir.Text))
+    {
+        string mot = m.Value.ToLower();
+        if (dico.ContainsKey(mot))
+            dico[mot]++;
+        else
+            dico[mot] = 1;
+    }
+
+    lstDictionnaire.BeginUpdate();
+    lstDictionnaire.Items.Clear();
+    foreach (KeyValuePair&lt;string, int&gt; entree in dico)
+    {
+        lstDictionnaire.Items.Add(entree.Key + "  " + entree.Value);
+    }
+    lstDictionnaire.EndUpdate();
+}</code></pre></div>
+  <ul class="explain">
+    <li><b>SortedDictionary&lt;string, int&gt;</b><span>Une table <i>clé → valeur</i> : le mot → son nombre de répétitions. « Sorted » : les clés restent toujours triées.</span></li>
+    <li><b>StringComparer.CurrentCulture</b><span>Trie selon la langue (fr-FR, réglée dans <code>Program.cs</code>), donc les mots accentués sont à la bonne place.</span></li>
+    <li><b>ToLower()</b><span>Met le mot en minuscules : « Le » et « le » comptent comme le même mot. Résultat attendu dans l'énoncé : <code>le 2</code>.</span></li>
+    <li><b>ContainsKey</b><span>Si le mot est déjà dans la table, on augmente son compteur (<code>++</code>). Sinon on l'ajoute avec 1.</span></li>
+    <li><b>foreach</b><span>Parcourt les mots dans l'ordre alphabétique et ajoute une ligne « mot  n » dans la ListBox.</span></li>
+    <li><b>BeginUpdate / EndUpdate</b><span>La ListBox ne se redessine qu'une fois à la fin, au lieu d'une fois par mot.</span></li>
+  </ul>
+  <div class="tbl"><table>
+    <thead><tr><th>Texte</th><th>Ce que fait le programme</th></tr></thead>
+    <tbody>
+      <tr><td>« <b>Ce</b> texte est un exemple. <b>Cet</b> exemple… »</td><td>Découpe : ce · texte · est · un · exemple · cet · exemple …</td></tr>
+      <tr><td>« exemple » trouvé 2 fois</td><td>1<sup>re</sup> fois : ajouté avec 1. 2<sup>e</sup> fois : passe à 2.</td></tr>
+      <tr><td>Fin du texte</td><td>ce 1 · cet 1 · contenir 1 · contient 1 · de 1 · des 2 · … · vous 1 (22 mots différents, 27 mots au total)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== ENREGISTRER ===================== -->
+<section id="enregistrer">
+  <h2>3) Optionnel : Enregistrer dans un fichier</h2>
+  <div class="code"><div class="cap"><span>Frmedit.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">private void btn_enregistrer_Click(object sender, EventArgs e)
+{
+    saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
+
+    if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK
+        &amp;&amp; saveFileDialog1.FileName.Length &gt; 0)
+    {
+        StreamWriter sr = File.CreateText(saveFileDialog1.FileName);
+        sr.Write(Txt_saisir.Text);
+        sr.Close();
+        MessageBox.Show("Texte enregistré dans :\n" + saveFileDialog1.FileName, "Enregistrer",
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+}</code></pre></div>
+  <ul class="explain">
+    <li><b>SaveFileDialog</b><span>La boîte Windows « Enregistrer sous ». On l'ajoute depuis la Boîte à outils ; elle apparaît sous le formulaire dans le Concepteur.</span></li>
+    <li><b>Filter</b><span>Format <code>"description|motif"</code> : seuls les fichiers <code>.txt</code> sont proposés.</span></li>
+    <li><b>DialogResult.OK</b><span>L'utilisateur a cliqué sur « Enregistrer » et non « Annuler ». On écrit le nom complet <code>System.Windows.Forms.DialogResult</code> car <code>DialogResult</code> est aussi une propriété du formulaire.</span></li>
+    <li><b>File.CreateText</b><span>Crée (ou remplace) le fichier et renvoie un <code>StreamWriter</code> pour écrire dedans. Vient de <code>using System.IO;</code>.</span></li>
+    <li><b>Write / Close</b><span>Écrit tout le texte, puis ferme le fichier. Sans <code>Close()</code>, le fichier pourrait rester vide ou verrouillé.</span></li>
+  </ul>
+</section>
+
+<!-- ===================== MENU ===================== -->
+<section id="menu">
+  <h2>3) Optionnel : le menu contextuel et la classe Clipboard <span class="file">Clipboard.cs · Frmedit.cs</span></h2>
+  <div class="code"><div class="cap"><span>Clipboard.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">namespace TraitementDeTexte
+{
+    // Presse-papiers interne de l'application (menu contextuel copier / couper / coller)
+    class Clipboard
+    {
+        public static string copier;
+    }
+}</code></pre></div>
+  <ul class="explain">
+    <li><b>static</b><span>La variable appartient à la <b>classe</b> et non à un objet : on écrit <code>Clipboard.copier</code> sans faire de <code>new</code>. Il n'en existe qu'une seule dans tout le programme, donc le texte copié est conservé entre deux clics.</span></li>
+    <li><b>public</b><span>Accessible depuis <code>Frmedit</code> (et tout autre formulaire).</span></li>
+    <li><b>Nom Clipboard</b><span>.NET a déjà une classe <code>System.Windows.Forms.Clipboard</code>. Comme la nôtre est dans le même espace de noms que <code>Frmedit</code> (<code>TraitementDeTexte</code>), c'est la nôtre qui est utilisée.</span></li>
+  </ul>
+
+  <div class="code"><div class="cap"><span>Frmedit.cs</span><button class="copy" type="button">Copier</button></div><pre><code class="cs">// ---------- Menu contextuel "Mnu" : copier / couper / coller ----------
+private void Mnu_Opening(object sender, CancelEventArgs e)
+{
+    bool selection = Txt_saisir.SelectionLength &gt; 0;
+    mnuCopier.Enabled = selection;
+    mnuCouper.Enabled = selection;
+    mnuColler.Enabled = !string.IsNullOrEmpty(Clipboard.copier);
+}
+
+private void mnuCopier_Click(object sender, EventArgs e)
+{
+    Clipboard.copier = Txt_saisir.SelectedText;
+}
+
+private void mnuCouper_Click(object sender, EventArgs e)
+{
+    Clipboard.copier = Txt_saisir.SelectedText;
+    Txt_saisir.SelectedText = "";
+}
+
+private void mnuColler_Click(object sender, EventArgs e)
+{
+    // Remplace la sélection (ou insère à la position du curseur)
+    Txt_saisir.SelectedText = Clipboard.copier;
+}</code></pre></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Élément</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>Mnu</code> (ContextMenuStrip)</td><td>Le menu du clic droit, avec 3 éléments : <code>mnuCopier</code>, <code>mnuCouper</code>, <code>mnuColler</code>. Il est lié à la zone par <code>Txt_saisir.ContextMenuStrip = Mnu</code>.</td></tr>
+      <tr><td><code>Mnu_Opening</code></td><td>Juste avant l'ouverture du menu : grise Copier/Couper s'il n'y a pas de sélection, grise Coller si rien n'a encore été copié.</td></tr>
+      <tr><td><code>SelectedText</code></td><td>Lire = le texte sélectionné. Écrire = remplacer la sélection (ou insérer au curseur s'il n'y a pas de sélection).</td></tr>
+      <tr><td>Copier</td><td>Mémorise la sélection dans <code>Clipboard.copier</code>.</td></tr>
+      <tr><td>Couper</td><td>Mémorise la sélection, puis la remplace par <code>""</code> (elle disparaît).</td></tr>
+      <tr><td>Coller</td><td>Écrit <code>Clipboard.copier</code> à la place de la sélection.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><p>Ce presse-papiers est <b>interne au programme</b> : un texte copié ici ne peut pas être collé dans Word, et inversement. <kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>Ctrl</kbd>+<kbd>V</kbd> continuent d'utiliser le presse-papiers de Windows.</p></div>
+</section>
+
+<!-- ===================== CONCEPTS ===================== -->
+<section id="concepts">
+  <h2>Les notions C# à retenir</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Notion</th><th>Dans ce TP</th></tr></thead>
+    <tbody>
+      <tr><td><code>namespace</code> / <code>using</code></td><td>Ranger ses classes / utiliser celles d'un autre espace de noms (<code>System.IO</code>, <code>System.Text.RegularExpressions</code>…).</td></tr>
+      <tr><td><code>partial class</code></td><td>Une classe écrite en deux fichiers (Designer + code).</td></tr>
+      <tr><td>Événement <code>+=</code></td><td>Relie un événement (<code>Click</code>, <code>TextChanged</code>, <code>Opening</code>) à une méthode.</td></tr>
+      <tr><td><code>Hide</code> / <code>ShowDialog</code> / <code>Close</code></td><td>Cacher une fenêtre / en ouvrir une en attendant sa fermeture / la fermer.</td></tr>
+      <tr><td><code>const</code></td><td>Valeur fixe (le login attendu).</td></tr>
+      <tr><td><code>static</code></td><td>Membre partagé par toute la classe (<code>Clipboard.copier</code>, <code>regexMot</code>).</td></tr>
+      <tr><td><code>Regex</code></td><td>Trouver les mots dans le texte.</td></tr>
+      <tr><td><code>SortedDictionary&lt;K,V&gt;</code></td><td>Associer chaque mot à son compteur, trié automatiquement.</td></tr>
+      <tr><td><code>StreamWriter</code></td><td>Écrire du texte dans un fichier.</td></tr>
+      <tr><td><code>SelectedText</code></td><td>Lire ou remplacer le texte sélectionné d'une TextBox.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== LANCER ===================== -->
+<section id="lancer">
+  <h2>Lancer le projet et résoudre les erreurs</h2>
+  <ol class="steps">
+    <li><span>Récupérer le dossier <code>TP2_TraitementDeTexte</code> (avec Git ou le ZIP). S'il vient d'un ZIP, l'<b>extraire</b> d'abord.</span></li>
+    <li><span>Double-cliquer sur <code>TraitementDeTexte.sln</code>.</span></li>
+    <li><span>Appuyer sur <kbd>F5</kbd>, puis se connecter avec <code>admin</code> / <code>1234</code>.</span></li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th>Message</th><th>Cause et solution</th></tr></thead>
+    <tbody>
+      <tr><td>« Le fichier spécifié est introuvable » à F5</td><td>Un dossier ou un fichier <code>.cs</code> a été ouvert à la place de la solution. Ouvrez le <code>.sln</code>. Sinon : clic droit sur le projet → <b>Définir comme projet de démarrage</b>.</td></tr>
+      <tr><td>« SDK net8.0 introuvable » / projet non chargé</td><td>Visual Studio Installer → Modifier → cocher <b>Développement .NET Desktop</b>.</td></tr>
+      <tr><td>Le Concepteur affiche une erreur</td><td><b>Générer → Générer la solution</b> (<kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>B</kbd>), puis rouvrir le formulaire.</td></tr>
+      <tr><td>Erreurs de génération</td><td>Affichage → <b>Liste d'erreurs</b> : lire la première erreur.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>TP 2 · Programmation Avancée · projet <code>TP2_TraitementDeTexte</code> du dépôt <code>Anibaa/career-journey-w2</code>.</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  // ---------- C# syntax highlighting ----------
+  var KW = "using|namespace|class|static|void|public|private|internal|protected|partial|readonly|const|new|if|else|foreach|in|return|this|true|false|null|override|string|int|bool|object";
+  var TY = "Form|EventArgs|CancelEventArgs|Regex|Match|SortedDictionary|KeyValuePair|StringComparer|StreamWriter|File|MessageBox|MessageBoxButtons|MessageBoxIcon|Application|CultureInfo|Thread|Frmedit|frmAuth|Clipboard|DialogResult|STAThread|Program";
+  var re = new RegExp('(@"(?:[^"]|"")*"|"(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)\')|(//.*$)|\\b(' + KW + ')\\b|\\b(' + TY + ')\\b|\\b(\\d+)\\b', "gm");
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  document.querySelectorAll("code.cs").forEach(function (el) {
+    var src = el.textContent, out = "", last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      var cls = m[1] ? "s" : m[2] ? "c" : m[3] ? "k" : m[4] ? "t" : "n";
+      out += '<span class="' + cls + '">' + esc(m[0]) + "</span>";
+      last = re.lastIndex;
+    }
+    el.innerHTML = out + esc(src.slice(last));
+  });
+
+  // ---------- Copy buttons ----------
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var code = btn.closest(".code").querySelector("code");
+      var done = function () { btn.textContent = "Copié"; setTimeout(function () { btn.textContent = "Copier"; }, 1500); };
+      var fallback = function () {
+        var r = document.createRange(); r.selectNodeContents(code);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        btn.textContent = "Ctrl+C pour copier";
+      };
+      try { navigator.clipboard.writeText(code.textContent).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+
+  // ---------- frmAuth mock ----------
+  var authStatus = document.getElementById("authStatus");
+  document.getElementById("authForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var ok = document.getElementById("mockLogin").value === "admin" && document.getElementById("mockPass").value === "1234";
+    authStatus.innerHTML = ok
+      ? "<b>Identifiants corrects</b> : frmAuth se cache et Frmedit s'ouvre."
+      : "MessageBox « Login ou mot de passe incorrect. » puis Txtpass est vidé.";
+    if (!ok) document.getElementById("mockPass").value = "";
+  });
+  document.getElementById("mockAnnuler").addEventListener("click", function () {
+    authStatus.textContent = "Application.Exit() : le programme se ferme.";
+  });
+
+  // ---------- Frmedit mock (same logic as Frmedit.cs) ----------
+  var txt = document.getElementById("mockTxt");
+  var nb = document.getElementById("mockNb");
+  var list = document.getElementById("mockList");
+  var status = document.getElementById("editStatus");
+  var ctx = document.getElementById("mockCtx");
+  var client = document.getElementById("editClient");
+  var motRe;
+  try { motRe = new RegExp("[\\p{L}\\p{M}\\p{N}]+", "gu"); } catch (e) { motRe = /[A-Za-zÀ-ÖØ-öø-ÿ0-9]+/g; }
+  var copier = null;
+
+  function mots() { return txt.value.match(motRe) || []; }
+  function afficherNombreDeMots() { nb.textContent = "Nombre de mots : " + mots().length; }
+  function mettreAJourDictionnaire() {
+    var dico = {};
+    mots().forEach(function (m) { var k = m.toLocaleLowerCase("fr-FR"); dico[k] = (dico[k] || 0) + 1; });
+    var keys = Object.keys(dico).sort(function (a, b) { return a.localeCompare(b, "fr"); });
+    list.innerHTML = "";
+    keys.forEach(function (k) {
+      var d = document.createElement("div"); d.setAttribute("role", "listitem");
+      d.textContent = k + "  " + dico[k]; list.appendChild(d);
+    });
+  }
+  txt.addEventListener("input", afficherNombreDeMots);
+  document.getElementById("mockMaj").addEventListener("click", function () {
+    mettreAJourDictionnaire(); status.textContent = "Dictionnaire mis à jour : " + list.children.length + " mots différents.";
+  });
+  document.getElementById("mockEffacer").addEventListener("click", function () {
+    txt.value = ""; afficherNombreDeMots(); txt.focus(); status.textContent = "Txt_saisir.Clear() : la zone est vide.";
+  });
+  document.getElementById("mockEnreg").addEventListener("click", function () {
+    status.textContent = "Dans le vrai programme : la boîte « Enregistrer sous » s'ouvre (fichiers *.txt).";
+  });
+  document.getElementById("mockQuitter").addEventListener("click", function () {
+    status.textContent = "this.Close() : l'éditeur se ferme, puis le programme se termine.";
+  });
+
+  // Context menu "Mnu"
+  var sel = [0, 0];
+  txt.addEventListener("contextmenu", function (e) {
+    e.preventDefault();
+    sel = [txt.selectionStart, txt.selectionEnd];
+    var has = sel[1] > sel[0];
+    ctx.children[0].className = has ? "" : "off";
+    ctx.children[1].className = has ? "" : "off";
+    ctx.children[2].className = copier ? "" : "off";
+    var r = client.getBoundingClientRect();
+    ctx.style.left = Math.min(e.clientX - r.left, 677 - 120) + "px";
+    ctx.style.top = Math.min(e.clientY - r.top, 404 - 80) + "px";
+    ctx.hidden = false;
+  });
+  ctx.addEventListener("mousedown", function (e) { e.preventDefault(); });
+  ctx.addEventListener("click", function (e) {
+    var item = e.target.closest("[data-act]");
+    if (!item || item.className === "off") return;
+    var a = item.dataset.act, v = txt.value;
+    if (a === "copier" || a === "couper") copier = v.slice(sel[0], sel[1]);
+    if (a === "couper") { txt.value = v.slice(0, sel[0]) + v.slice(sel[1]); txt.setSelectionRange(sel[0], sel[0]); }
+    if (a === "coller") { txt.value = v.slice(0, sel[0]) + copier + v.slice(sel[1]); var p = sel[0] + copier.length; txt.setSelectionRange(p, p); }
+    ctx.hidden = true; txt.focus(); afficherNombreDeMots();
+    status.textContent = "Clipboard.copier = « " + (copier.length > 40 ? copier.slice(0, 40) + "…" : copier) + " »";
+  });
+  document.addEventListener("click", function (e) { if (!ctx.contains(e.target)) ctx.hidden = true; });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") ctx.hidden = true; });
+
+  afficherNombreDeMots();
+  mettreAJourDictionnaire();
+})();
+</script>
