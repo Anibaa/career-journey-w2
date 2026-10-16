@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TraitementDeTexte", "TraitementDeTexte.csproj", "{D8608075-FF1F-4DBC-8D40-7315ABBE9C73}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8608075-FF1F-4DBC-8D40-7315ABBE9C73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8608075-FF1F-4DBC-8D40-7315ABBE9C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8608075-FF1F-4DBC-8D40-7315ABBE9C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8608075-FF1F-4DBC-8D40-7315ABBE9C73}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8725C685-E023-44C2-B7C1-B8AB10334767}
+	EndGlobalSection
+EndGlobal
