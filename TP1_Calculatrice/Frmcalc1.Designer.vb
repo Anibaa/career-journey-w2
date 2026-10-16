@@ -81,11 +81,9 @@ Partial Class Frmcalc1
         'optPlus
         '
         Me.optPlus.AutoSize = True
-        Me.optPlus.Checked = True
         Me.optPlus.Location = New System.Drawing.Point(15, 23)
         Me.optPlus.Name = "optPlus"
         Me.optPlus.TabIndex = 0
-        Me.optPlus.TabStop = True
         Me.optPlus.Text = "+"
         '
         'optMoins

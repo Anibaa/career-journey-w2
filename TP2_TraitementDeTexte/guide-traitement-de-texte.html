@@ -351,7 +351,7 @@ this.btnOk.Click += new System.EventHandler(this.btnOk_Click);</code></pre></div
   <p>Maquette fonctionnelle : tapez dans la zone de gauche, le nombre de mots change à chaque frappe. Cliquez sur « Mettre à jour le dictionnaire » pour remplir la liste. Le clic droit dans la zone ouvre le menu Copier / Couper / Coller. Le calcul est le même que celui du programme C#.</p>
   <div class="scroll">
     <div class="win" style="width:677px">
-      <div class="bar"><span>Editeur</span><span class="btns">—&nbsp;&nbsp;✕</span></div>
+      <div class="bar"><span>Editeur</span><span class="btns">—&nbsp;&nbsp;☐&nbsp;&nbsp;✕</span></div>
       <div class="client" style="height:404px" id="editClient">
         <div class="ctl grp" style="left:12px;top:12px;width:380px;height:380px"><span class="gt">Texte à saisir</span>
           <label for="mockTxt" class="ctl" style="left:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Texte à saisir</label>
@@ -378,12 +378,13 @@ this.btnOk.Click += new System.EventHandler(this.btnOk_Click);</code></pre></div
   <div class="tbl"><table>
     <thead><tr><th>Contrôle</th><th>Propriétés clés</th></tr></thead>
     <tbody>
-      <tr><td><code>Frmedit</code></td><td>Titre « Editeur », <code>FixedSingle</code>, <code>MaximizeBox = false</code></td></tr>
+      <tr><td><code>Frmedit</code></td><td>Titre « Editeur ». Fenêtre redimensionnable avec Réduire / Agrandir, comme sur la capture de l'énoncé. <code>MinimumSize = 600 × 360</code></td></tr>
+      <tr><td><code>tableLayoutPanel1</code></td><td><code>Dock = Fill</code>, 2 colonnes (58 % / 42 %) : chaque GroupBox (<code>Dock = Fill</code>) suit la taille de la fenêtre</td></tr>
       <tr><td><code>groupBox1</code> / <code>groupBox2</code></td><td>« Texte à saisir » et « Dictionnaire » : séparent le formulaire en deux zones</td></tr>
-      <tr><td><code>Txt_saisir</code></td><td><code>Multiline = true</code>, <code>ScrollBars = Vertical</code>, <code>ContextMenuStrip = Mnu</code></td></tr>
+      <tr><td><code>Txt_saisir</code></td><td><code>Multiline = true</code>, <code>ScrollBars = Vertical</code>, <code>ContextMenuStrip = Mnu</code>, <code>Anchor</code> sur les 4 côtés : s'agrandit avec la fenêtre</td></tr>
       <tr><td><code>lblNbMots</code></td><td>Affiche « Nombre de mots : n »</td></tr>
-      <tr><td><code>btn_effacer</code>, <code>btn_enregistrer</code>, <code>btn_quitter</code></td><td>Effacer, Enregistrer, Quitter</td></tr>
-      <tr><td><code>lstDictionnaire</code></td><td>ListBox : un mot et son nombre de répétitions par ligne</td></tr>
+      <tr><td><code>btn_effacer</code>, <code>btn_enregistrer</code>, <code>btn_quitter</code></td><td>Effacer, Enregistrer, Quitter. <code>Anchor = Bottom, Right</code> : restent en bas à droite</td></tr>
+      <tr><td><code>lstDictionnaire</code></td><td>ListBox : un mot et son nombre de répétitions par ligne. <code>Anchor</code> sur les 4 côtés</td></tr>
       <tr><td><code>btn_maj</code></td><td>Mettre à jour le dictionnaire</td></tr>
       <tr><td><code>saveFileDialog1</code>, <code>Mnu</code></td><td>Composants non visibles (en bas du Concepteur) : boîte « Enregistrer sous » et menu contextuel</td></tr>
     </tbody>
